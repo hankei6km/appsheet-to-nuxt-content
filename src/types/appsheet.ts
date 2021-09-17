@@ -16,3 +16,7 @@ export type MapCols = {
   dstName: string;
   colType: 'number' | 'string' | 'datetime' | 'image'; // 独自の定義(AppSheet 側の型ではない).
 }[];
+
+export type FindResult = {
+  rows: (BaseCols & Record<string, any>)[];
+};

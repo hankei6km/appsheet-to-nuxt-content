@@ -1,9 +1,25 @@
 import {
   apiActionBodyFind,
   apiActionPath,
+  client,
   imageURL,
   mappingCols
 } from './appsheet';
+import mockAxios from 'jest-mock-axios';
+
+afterEach(() => {
+  mockAxios.reset();
+});
+
+const orgConsoleError = console.error;
+
+beforeEach(() => {
+  console.error = jest.fn();
+});
+
+afterEach(() => {
+  console.error = orgConsoleError;
+});
 
 describe('mappingCols', () => {
   test('should map cols', () => {
@@ -105,5 +121,82 @@ describe('imageURL()', () => {
   });
   test('should return blnak if fileName is blank', () => {
     expect(imageURL('abc-123', 'テーブル', '')).toEqual('');
+  });
+});
+
+describe('client.find', () => {
+  it('should call axios.post to get rows from AppSheet', async () => {
+    const n = new Date().toUTCString();
+    const res = client(
+      'https://api.appsheet.com/api/v2/',
+      'appId',
+      'appName',
+      'secret'
+    ).find('tbl', [
+      { srcName: 'タイトル', dstName: 'title', colType: 'string' }
+    ]);
+    expect(mockAxios.post).toHaveBeenLastCalledWith(
+      `https://api.appsheet.com/api/v2/${apiActionPath(
+        'appId',
+        'tbl',
+        'secret'
+      )}`,
+      '{"Action":"Find","Properties":{},"Rows":[]}',
+      {
+        headers: { 'Content-Type': ' application/json' }
+      }
+    );
+    mockAxios.mockResponse({
+      data: [
+        {
+          _RowNumber: 1,
+          id: 'idstring1',
+          created: n,
+          updated: n,
+          タイトル: 'Title1'
+        },
+        {
+          _RowNumber: 2,
+          id: 'idstring2',
+          created: n,
+          updated: n,
+          タイトル: 'Title2'
+        }
+      ]
+    });
+    await expect(res).resolves.toEqual({
+      rows: [
+        {
+          _RowNumber: 1,
+          id: 'idstring1',
+          created: new Date(n),
+          updated: new Date(n),
+          title: 'Title1'
+        },
+        {
+          _RowNumber: 2,
+          id: 'idstring2',
+          created: new Date(n),
+          updated: new Date(n),
+          title: 'Title2'
+        }
+      ]
+    });
+  });
+  it('should throw error', async () => {
+    const n = new Date().toUTCString();
+    const res = client(
+      'https://api.appsheet.com/api/v2/',
+      'appId',
+      'appName',
+      'secret'
+    ).find('tbl', [
+      { srcName: 'タイトル', dstName: 'title', colType: 'string' }
+    ]);
+    expect(mockAxios.post).toHaveBeenCalledTimes(1);
+    mockAxios.mockError({ response: { status: 429, statusText: '429 error' } });
+    await expect(res).rejects.toThrow(
+      'client.find API request error: table = tbl, status = 429:429 error'
+    );
   });
 });

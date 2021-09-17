@@ -1,4 +1,10 @@
-import { APIActionBody, BaseCols, MapCols } from '../types/appsheet';
+import axios from 'axios';
+import {
+  APIActionBody,
+  BaseCols,
+  FindResult,
+  MapCols
+} from '../types/appsheet';
 
 export function mappingCols(s: any, m: MapCols): BaseCols {
   const n = Date.now();
@@ -72,4 +78,39 @@ export function imageURL(
     return `https://www.appsheet.com/template/gettablefileurl?${q.toString()}`;
   }
   return '';
+}
+
+export function client(
+  apiBaseURL: string,
+  appId: string,
+  appName: string,
+  accessKey: string
+) {
+  return {
+    find: async function (
+      tableName: string,
+      mapCols: MapCols,
+      props?: Record<string, string>
+    ): Promise<FindResult> {
+      const res = await axios
+        .post(
+          `${apiBaseURL}${apiActionPath(appId, tableName, accessKey)}`,
+          JSON.stringify(apiActionBodyFind(props)),
+          {
+            headers: { 'Content-Type': ' application/json' }
+          }
+        )
+        .catch((err) => {
+          console.error(
+            `client.find API request error: table = ${tableName}, status = ${err.response.status}:${err.response.statusText}`
+          );
+          throw new Error(
+            `client.find API request error: table = ${tableName}, status = ${err.response.status}:${err.response.statusText}`
+          );
+        });
+      return {
+        rows: res.data.map((row: any) => mappingCols(row, mapCols))
+      };
+    }
+  };
 }
