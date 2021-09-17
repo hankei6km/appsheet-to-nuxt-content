@@ -145,7 +145,9 @@ describe('mappingCols', () => {
           }
         ]
       )
-    ).toThrow();
+    ).toThrow(
+      `mappingCols: invalid id: value = id.string, params = id, id, id`
+    );
     expect(() =>
       mappingCols(
         {
@@ -162,7 +164,9 @@ describe('mappingCols', () => {
           }
         ]
       )
-    ).toThrow();
+    ).toThrow(
+      `mappingCols: invalid id: value = undefined, params = id, id, id`
+    );
     expect(() =>
       mappingCols(
         {
@@ -180,7 +184,9 @@ describe('mappingCols', () => {
           }
         ]
       )
-    ).toThrow();
+    ).toThrow(
+      `mappingCols: invalid id: value = file.md, params = 名前, filename, id`
+    );
   });
   test('should throw invalid type error ', () => {
     const n = new Date().toUTCString();
@@ -201,7 +207,9 @@ describe('mappingCols', () => {
           }
         ]
       )
-    ).toThrow();
+    ).toThrow(
+      `mappingCols: invalid type: actually type = string, params = 回数, count, number`
+    );
   });
 });
 
