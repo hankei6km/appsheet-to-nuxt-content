@@ -41,13 +41,13 @@ function throwInvalidType(
 }
 
 export function mappingCols(s: any, m: MapCols): BaseCols {
-  const n = Date.now();
+  const n = new Date();
   const id = validId(s.id) ? s.id : throwInvalidId(s.id, 'id', 'id', 'id');
   const ret: BaseCols = {
     _RowNumber: s._RowNumber !== undefined ? s._RowNumber! : -1,
     id,
-    created: s.created ? new Date(s.created) : new Date(),
-    updated: s.updated ? new Date(s.updated) : new Date()
+    created: s.created ? new Date(s.created) : n,
+    updated: s.updated ? new Date(s.updated) : n
   };
   m.forEach(({ srcName, dstName, colType }) => {
     const srcColType = typeof s[srcName];
