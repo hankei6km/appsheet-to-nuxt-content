@@ -8,24 +8,66 @@ import {
   MapCols
 } from '../types/appsheet';
 
+const validIdRegExp = /^[-_0-9a-zA-Z]+$/;
+export function validId(s: string | number): boolean {
+  if (typeof s === 'number') {
+    return true;
+  } else if (typeof s === 'string' && s.match(validIdRegExp)) {
+    return true;
+  }
+  return false;
+}
+
+function throwInvalidId(
+  value: string,
+  srcName: string,
+  dstName: string,
+  colType: string
+) {
+  throw new Error(
+    `mappingCols: invalid id: value = ${value}, params = ${srcName}, ${dstName}, ${colType}`
+  );
+}
+
+function throwInvalidType(
+  actually: string,
+  srcName: string,
+  dstName: string,
+  colType: string
+) {
+  throw new Error(
+    `mappingCols: invalid type: actually type = ${actually}, params = ${srcName}, ${dstName}, ${colType}`
+  );
+}
+
 export function mappingCols(s: any, m: MapCols): BaseCols {
   const n = Date.now();
+  const id = validId(s.id) ? s.id : throwInvalidId(s.id, 'id', 'id', 'id');
   const ret: BaseCols = {
     _RowNumber: s._RowNumber !== undefined ? s._RowNumber! : -1,
-    id: s.id || '',
+    id,
     created: s.created ? new Date(s.created) : new Date(),
     updated: s.updated ? new Date(s.updated) : new Date()
   };
   m.forEach(({ srcName, dstName, colType }) => {
     const srcColType = typeof s[srcName];
     switch (colType) {
+      case 'id':
+        if (srcColType === 'number' || srcColType === 'string') {
+          if (validId(s[srcName])) {
+            ret[dstName] = `${s[srcName]}`;
+          } else {
+            throwInvalidId(s[srcName], srcName, dstName, colType);
+          }
+        } else {
+          throwInvalidType(srcColType, srcName, dstName, colType);
+        }
+        break;
       case 'number':
         if (srcColType === 'number') {
           ret[dstName] = s[srcName];
         } else {
-          throw new Error(
-            `mappingCols: invalid type: actually type = ${srcColType}, params = ${srcName}, ${dstName}, ${colType}`
-          );
+          throwInvalidType(srcColType, srcName, dstName, colType);
         }
         break;
       case 'string':

@@ -3,7 +3,8 @@ import {
   apiActionPath,
   client,
   imageURL,
-  mappingCols
+  mappingCols,
+  validId
 } from './appsheet';
 import mockAxios from 'jest-mock-axios';
 
@@ -56,6 +57,26 @@ afterEach(() => {
   console.error = orgConsoleError;
 });
 
+describe('validId', () => {
+  test('should return true', () => {
+    expect(validId(123)).toBeTruthy();
+    expect(validId('id')).toBeTruthy();
+    expect(validId('ID')).toBeTruthy();
+    expect(validId('123abcABC')).toBeTruthy();
+    expect(validId('123-abc_ABC')).toBeTruthy();
+    expect(
+      validId(
+        '-_0123456789abcdefghijklmnopqrstuvwxyZABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      )
+    ).toBeTruthy();
+  });
+  test('should return false', () => {
+    expect(validId('')).not.toBeTruthy();
+    expect(validId('post.md')).not.toBeTruthy();
+    expect(validId('path/../../../../../to/post')).not.toBeTruthy();
+  });
+});
+
 describe('mappingCols', () => {
   test('should map cols', () => {
     const n = new Date().toUTCString();
@@ -105,7 +126,63 @@ describe('mappingCols', () => {
       image: 'アプリ_Images/test.png'
     });
   });
-  test('should throw type not match error', () => {
+  test('should throw invalid id error ', () => {
+    const n = new Date().toUTCString();
+    expect(() =>
+      mappingCols(
+        {
+          _RowNumber: 1,
+          id: 'id.string',
+          created: n,
+          updated: n,
+          名前: 'file.md'
+        },
+        [
+          {
+            srcName: '名前',
+            dstName: 'filename',
+            colType: 'string'
+          }
+        ]
+      )
+    ).toThrow();
+    expect(() =>
+      mappingCols(
+        {
+          _RowNumber: 1,
+          created: n,
+          updated: n,
+          名前: 'file.md'
+        },
+        [
+          {
+            srcName: '名前',
+            dstName: 'filename',
+            colType: 'string'
+          }
+        ]
+      )
+    ).toThrow();
+    expect(() =>
+      mappingCols(
+        {
+          _RowNumber: 1,
+          id: 'idstring',
+          created: n,
+          updated: n,
+          名前: 'file.md'
+        },
+        [
+          {
+            srcName: '名前',
+            dstName: 'filename',
+            colType: 'id'
+          }
+        ]
+      )
+    ).toThrow();
+  });
+  test('should throw invalid type error ', () => {
     const n = new Date().toUTCString();
     expect(() =>
       mappingCols(

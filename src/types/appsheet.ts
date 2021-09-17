@@ -14,7 +14,7 @@ export type BaseCols = {
 export type MapCols = {
   srcName: string;
   dstName: string;
-  colType: 'number' | 'string' | 'datetime' | 'image'; // 独自の定義(AppSheet 側の型ではない).
+  colType: 'id' | 'number' | 'string' | 'datetime' | 'image'; // 独自の定義(AppSheet 側の型ではない).
 }[];
 
 export type FindResult = {
