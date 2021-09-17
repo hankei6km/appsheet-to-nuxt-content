@@ -14,7 +14,7 @@ const cli = async ({ filenames, stdout, stderr }: Opts): Promise<number> => {
       const count = await countChars(filename);
       stdout.write(`${filename}: ${count} chars\n`);
     }
-  } catch (err) {
+  } catch (err: any) {
     stderr.write(err.toString());
     stderr.write('\n');
     return 1;
