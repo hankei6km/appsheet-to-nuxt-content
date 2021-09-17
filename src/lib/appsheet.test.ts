@@ -11,6 +11,41 @@ afterEach(() => {
   mockAxios.reset();
 });
 
+jest.mock('fs', () => {
+  const mockWrite = jest.fn();
+  const mockCreateWriteStream = jest.fn();
+  const reset = () => {
+    mockWrite.mockReset();
+    mockCreateWriteStream.mockReset().mockImplementation(() => {
+      let handler: any = () => {};
+      return {
+        write: mockWrite,
+        on: (e: any, h: any) => {
+          if (e === 'close') {
+            handler = h;
+            process.nextTick(h); // TODO: jest-mock-axios の pipe の挙動調べる.
+          }
+        },
+        close: () => handler()
+      };
+    });
+  };
+
+  reset();
+  return {
+    createWriteStream: mockCreateWriteStream,
+    _reset: reset,
+    _getMocks: () => ({
+      mockWrite,
+      mockCreateWriteStream
+    })
+  };
+});
+
+afterEach(() => {
+  require('fs')._reset();
+});
+
 const orgConsoleError = console.error;
 
 beforeEach(() => {
@@ -197,6 +232,43 @@ describe('client.find', () => {
     mockAxios.mockError({ response: { status: 429, statusText: '429 error' } });
     await expect(res).rejects.toThrow(
       'client.find API request error: table = tbl, status = 429:429 error'
+    );
+  });
+});
+
+describe('client.saveImage', () => {
+  it('should get image from AppShett and save to local file', async () => {
+    const res = client(
+      'https://api.appsheet.com/api/v2/',
+      'appId',
+      'appName',
+      'secret'
+    ).saveImage('tbl', 'アプリ_Image/image.jpg', '/path/to/static');
+    expect(mockAxios.request).toHaveBeenLastCalledWith({
+      method: 'get',
+      url: imageURL('appName', 'tbl', 'アプリ_Image/image.jpg'),
+      responseType: 'stream'
+    });
+    mockAxios.mockResponse({
+      data: 'image data'
+    });
+    await expect(res).resolves.toEqual('/path/to/static/image.jpg');
+    const { mockCreateWriteStream } = require('fs')._getMocks();
+    expect(mockCreateWriteStream).toHaveBeenLastCalledWith(
+      '/path/to/static/image.jpg'
+    );
+  });
+  it('should throw error', async () => {
+    const res = client(
+      'https://api.appsheet.com/api/v2/',
+      'appId',
+      'appName',
+      'secret'
+    ).saveImage('tbl', 'アプリ_Image/image.jpg', '/path/to/static');
+    expect(mockAxios.request).toHaveBeenCalledTimes(1);
+    mockAxios.mockError({ response: { status: 404, statusText: '' } });
+    await expect(res).rejects.toThrow(
+      'client.saveImage error: table = tbl, status = 404:'
     );
   });
 });

@@ -1,3 +1,5 @@
+import path from 'path';
+import fs from 'fs';
 import axios from 'axios';
 import {
   APIActionBody,
@@ -111,6 +113,37 @@ export function client(
       return {
         rows: res.data.map((row: any) => mappingCols(row, mapCols))
       };
+    },
+    saveImage: async function (
+      tableName: string,
+      src: string,
+      dstDir: string
+    ): Promise<string> {
+      const fileName = path.basename(src);
+      const savePath = path.join(dstDir, fileName);
+      return new Promise((resolve, reject) => {
+        axios
+          .request({
+            method: 'get',
+            url: imageURL(appName, tableName, src),
+            responseType: 'stream'
+          })
+          .then((response) => {
+            const w = fs.createWriteStream(savePath);
+            w.on('close', () => resolve(savePath));
+            response.data.pipe(w);
+          })
+          .catch((err) => {
+            console.error(
+              `client.saveImage error: table = ${tableName}, status = ${err.response.status}:${err.response.statusText}`
+            );
+            reject(
+              new Error(
+                `client.saveImage error: table = ${tableName}, status = ${err.response.status}:${err.response.statusText}`
+              )
+            );
+          });
+      });
     }
   };
 }
