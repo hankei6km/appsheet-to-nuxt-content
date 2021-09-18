@@ -1,9 +1,21 @@
 {
-  "name": "test-appsheet-nuxt-content",
-  "version": "0.1.0",
-  "description": "AppSheet を nuxt-content で使うテスト",
+  "name": "@hankei6km/appsheet-to-nuxt-content",
+  "version": "0.1.1-pre.0",
+  "description": "save contents from AppSheet for use with nuxt-content",
   "license": "MIT",
-  "keywords": [],
+  "author": "hankei6km <hankei6km@gmail.com> (https://github.com/hankei6km)",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hankei6km/appsheet-to-nuxt-content.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hankei6km/appsheet-to-nuxt-content/issues"
+  },
+  "keywords": [
+    "appsheet",
+    "nuxt",
+    "nuxt-content"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

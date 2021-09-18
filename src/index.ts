@@ -1,2 +1,3 @@
+import { client } from './lib/appsheet';
 import { saveRemoteContents } from './lib/content';
-export { saveRemoteContents };
+export { client, saveRemoteContents };
