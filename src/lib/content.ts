@@ -30,7 +30,7 @@ export async function saveRemoteContents(
   tableName: string,
   mapCols: MapCols,
   dstContentDir: string,
-  dstImageDir: string
+  dstImagesDir: string
 ): Promise<Error | null> {
   let ret: Error | null = null;
   try {
@@ -46,7 +46,7 @@ export async function saveRemoteContents(
             ({ dstName, colType }) => dstName === c[0] && colType === 'image'
           ) >= 0
         ) {
-          c[1] = await client.saveImage(tableName, c[1], dstImageDir);
+          c[1] = await client.saveImage(tableName, c[1], dstImagesDir);
         }
       }
       const cols: BaseCols = { ...rows[idx] };

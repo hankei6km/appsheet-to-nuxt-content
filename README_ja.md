@@ -89,7 +89,7 @@ API 用の Access Key。
 `Client`
  
 
-### `saveRemoteContents(client, tableName, mapCols, dstContentDir, dstImageDir)`
+### `saveRemoteContents(client, tableName, mapCols, dstContentDir, dstImagesDir)`
 
 リモートのコンテンツを保存する。
 

@@ -89,7 +89,7 @@ Access key to get contents.
 `Client`
  
 
-### `saveRemoteContents(client, tableName, mapCols, dstContentDir, dstImageDir)`
+### `saveRemoteContents(client, tableName, mapCols, dstContentDir, dstImagesDir)`
 
 Save remote contens.
 
