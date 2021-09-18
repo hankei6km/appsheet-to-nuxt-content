@@ -1,4 +1,6 @@
-import { BaseCols } from '../types/appsheet';
+import path from 'path';
+import { resolve } from 'path/posix';
+import { BaseCols, MapCols } from '../types/appsheet';
 import { saveContentFile, saveRemoteContents } from './content';
 
 // import { getAllPagesIds, getPagesData } from './pages';
@@ -26,11 +28,28 @@ jest.mock('fs/promises', () => {
 
 jest.mock('./appsheet', () => {
   let mockClientFind = jest.fn();
+  let mockClientSaveImage = jest.fn();
   let mockClient = jest.fn();
   const reset = (rows: BaseCols[]) => {
     mockClientFind.mockReset().mockResolvedValue({ rows });
+    mockClientSaveImage
+      .mockReset()
+      .mockImplementation(
+        async (
+          tableName: string,
+          src: string,
+          dstDir: string
+        ): Promise<string> => {
+          return new Promise((resolve) => {
+            process.nextTick(() =>
+              resolve(path.join(dstDir, path.basename(src)))
+            );
+          });
+        }
+      );
     mockClient.mockReset().mockImplementation(() => ({
-      find: mockClientFind
+      find: mockClientFind,
+      saveImage: mockClientSaveImage
     }));
   };
   reset([]);
@@ -39,7 +58,8 @@ jest.mock('./appsheet', () => {
     _reset: reset,
     _getMocks: () => ({
       mockClient,
-      mockClientFind
+      mockClientFind,
+      mockClientSaveImage
     })
   };
 });
@@ -108,6 +128,7 @@ describe('saveRemoteContents()', () => {
         created: new Date('2021-09-17T16:50:56.000Z'),
         updated: new Date('2021-09-17T17:50:56.000Z'),
         title: 'Title1',
+        image: 'アプリ_Images/test1.png',
         content: 'markdown1'
       },
       {
@@ -116,31 +137,53 @@ describe('saveRemoteContents()', () => {
         created: new Date('2022-09-27T26:50:56.000Z'),
         updated: new Date('2022-09-27T27:50:56.000Z'),
         title: 'Title2',
+        image: 'アプリ_Images/test2.png',
         content: 'markdown2'
       }
     ]);
     const client = require('./appsheet')._getMocks().mockClient();
+    const mapCols: MapCols = [
+      { srcName: 'タイトル', dstName: 'title', colType: 'string' },
+      { srcName: '画像', dstName: 'image', colType: 'image' }
+    ];
     const res = saveRemoteContents(
       client,
       'tbl',
-      [],
+      mapCols,
       '/path/content',
       '/path/static'
     );
     await expect(res).resolves.toEqual(null);
-    const { mockClientFind } = require('./appsheet')._getMocks();
-    expect(mockClientFind.mock.calls[0]).toEqual(['tbl', []]);
+    const { mockClientFind, mockClientSaveImage } =
+      require('./appsheet')._getMocks();
+    expect(mockClientFind.mock.calls[0]).toEqual(['tbl', mapCols]);
+    expect(mockClientSaveImage.mock.calls[0]).toEqual([
+      'tbl',
+      'アプリ_Images/test1.png',
+      '/path/static'
+    ]);
+    expect(mockClientSaveImage.mock.calls[1]).toEqual([
+      'tbl',
+      'アプリ_Images/test2.png',
+      '/path/static'
+    ]);
     const { mockWriteFile } = require('fs/promises')._getMocks();
     expect(mockWriteFile.mock.calls[0][0]).toEqual(
       '/path/content/idstring1.md'
     );
     expect(mockWriteFile.mock.calls[0][1]).toContain('title: Title1');
+    expect(mockWriteFile.mock.calls[0][1]).toContain(
+      'image: /path/static/test1.png'
+    );
     expect(mockWriteFile.mock.calls[0][1]).toContain('position: 0');
     expect(mockWriteFile.mock.calls[0][1]).toContain('markdown1');
     expect(mockWriteFile.mock.calls[1][0]).toEqual(
       '/path/content/idstring2.md'
     );
     expect(mockWriteFile.mock.calls[1][1]).toContain('title: Title2');
+    expect(mockWriteFile.mock.calls[1][1]).toContain(
+      'image: /path/static/test2.png'
+    );
     expect(mockWriteFile.mock.calls[1][1]).toContain('position: 1');
     expect(mockWriteFile.mock.calls[1][1]).toContain('markdown2');
   });

@@ -30,14 +30,28 @@ export async function saveRemoteContents(
   tableName: string,
   mapCols: MapCols,
   dstContentDir: string,
-  destImageDir: string
+  dstImageDir: string
 ): Promise<Error | null> {
   let ret: Error | null = null;
   try {
     const { rows } = await client.find(tableName, mapCols);
     const len = rows.length;
     for (let idx = 0; idx < len; idx++) {
-      ret = await saveContentFile(rows[idx], mapCols, dstContentDir, idx);
+      const colsArray: [string, any][] = Object.entries(rows[idx]);
+      const colsLen = colsArray.length;
+      for (let colsIdx = 0; colsIdx < colsLen; colsIdx++) {
+        const c = colsArray[colsIdx];
+        if (
+          mapCols.findIndex(
+            ({ dstName, colType }) => dstName === c[0] && colType === 'image'
+          ) >= 0
+        ) {
+          c[1] = await client.saveImage(tableName, c[1], dstImageDir);
+        }
+      }
+      const cols: BaseCols = { ...rows[idx] };
+      colsArray.forEach(([k, v]) => (cols[k] = v));
+      ret = await saveContentFile(cols, mapCols, dstContentDir, idx);
       if (ret) {
         break;
       }
