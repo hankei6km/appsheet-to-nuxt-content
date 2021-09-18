@@ -55,6 +55,11 @@ import cli from './cli';
         type: 'string',
         require: true,
         description: 'access key to get contents'
+      },
+      'static-root': {
+        type: 'string',
+        defult: 'static/',
+        description: 'root of static path to trim image path'
       }
     })
     .help().argv;
@@ -69,7 +74,8 @@ import cli from './cli';
       appName: argv['app-name'],
       tableName: argv.tableName,
       mapCols: argv['map-cols'],
-      accessKey: argv['access-key']
+      accessKey: argv['access-key'],
+      staticRoot: argv['static-root'] || 'static/'
     })
   );
 })();

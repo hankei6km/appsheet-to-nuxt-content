@@ -55,7 +55,8 @@ describe('cli()', () => {
       appName: 'appname',
       mapCols: 'test/assets/mapcols.json',
       tableName: 'tbl',
-      accessKey: 'secret'
+      accessKey: 'secret',
+      staticRoot: '/static'
     });
     expect(await res).toEqual(0);
     const { mockSaveRemoteContents } = require('./lib/content')._getMocks();
@@ -75,7 +76,8 @@ describe('cli()', () => {
         }
       ],
       '/contents/tbl',
-      '/static/tbl'
+      '/static/tbl',
+      '/static'
     ]);
     expect(outData).toEqual('');
     expect(errData).toEqual('');
@@ -98,7 +100,8 @@ describe('cli()', () => {
       appName: 'appname',
       mapCols: 'test/assets/mapcols.json',
       tableName: 'tbl',
-      accessKey: 'secret'
+      accessKey: 'secret',
+      staticRoot: '/static'
     });
     expect(await res).toEqual(1);
     expect(outData).toEqual('');

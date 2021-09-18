@@ -153,6 +153,7 @@ describe('saveRemoteContents()', () => {
       'tbl',
       mapCols,
       '/path/content',
+      '/path/static/images',
       '/path/static'
     );
     await expect(res).resolves.toEqual(null);
@@ -162,12 +163,12 @@ describe('saveRemoteContents()', () => {
     expect(mockClientSaveImage.mock.calls[0]).toEqual([
       'tbl',
       'アプリ_Images/test1.png',
-      '/path/static'
+      '/path/static/images'
     ]);
     expect(mockClientSaveImage.mock.calls[1]).toEqual([
       'tbl',
       'アプリ_Images/test2.png',
-      '/path/static'
+      '/path/static/images'
     ]);
     const { mockWriteFile } = require('fs/promises')._getMocks();
     expect(mockWriteFile.mock.calls[0][0]).toEqual(
@@ -175,7 +176,7 @@ describe('saveRemoteContents()', () => {
     );
     expect(mockWriteFile.mock.calls[0][1]).toContain('title: Title1');
     expect(mockWriteFile.mock.calls[0][1]).toContain(
-      'image: /path/static/test1.png'
+      'image: /images/test1.png'
     );
     expect(mockWriteFile.mock.calls[0][1]).toContain('position: 0');
     expect(mockWriteFile.mock.calls[0][1]).toContain('markdown1');
@@ -184,7 +185,7 @@ describe('saveRemoteContents()', () => {
     );
     expect(mockWriteFile.mock.calls[1][1]).toContain('title: Title2');
     expect(mockWriteFile.mock.calls[1][1]).toContain(
-      'image: /path/static/test2.png'
+      'image: /images/test2.png'
     );
     expect(mockWriteFile.mock.calls[1][1]).toContain('position: 1');
     expect(mockWriteFile.mock.calls[1][1]).toContain('markdown2');
@@ -199,7 +200,14 @@ describe('saveRemoteContents()', () => {
       }
     ]);
     const client = require('./appsheet')._getMocks().mockClient();
-    const res = saveRemoteContents(client, 'tbl', [], '/error', '/path/static');
+    const res = saveRemoteContents(
+      client,
+      'tbl',
+      [],
+      '/error',
+      '/path/static/images',
+      '/path/static'
+    );
     expect(String(await res)).toMatch(/dummy error/);
   });
 });
