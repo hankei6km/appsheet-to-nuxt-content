@@ -158,9 +158,6 @@ export function client(
           }
         )
         .catch((err) => {
-          console.error(
-            `client.find API request error: table = ${tableName}, status = ${err.response.status}:${err.response.statusText}`
-          );
           throw new Error(
             `client.find API request error: table = ${tableName}, status = ${err.response.status}:${err.response.statusText}`
           );
@@ -196,9 +193,6 @@ export function client(
             response.data.pipe(w);
           })
           .catch((err) => {
-            console.error(
-              `client.saveImage error: table = ${tableName}, status = ${err.response.status}:${err.response.statusText}`
-            );
             reject(
               new Error(
                 `client.saveImage error: table = ${tableName}, status = ${err.response.status}:${err.response.statusText}`
