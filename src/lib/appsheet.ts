@@ -165,6 +165,11 @@ export function client(
             `client.find API request error: table = ${tableName}, status = ${err.response.status}:${err.response.statusText}`
           );
         });
+      if (res.data === '') {
+        throw new Error(
+          `client.find API request error: table = ${tableName}, empty data received`
+        );
+      }
       return {
         rows: res.data.map((row: any) => mappingCols(row, mapCols))
       };

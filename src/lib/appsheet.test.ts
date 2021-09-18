@@ -303,7 +303,25 @@ describe('client.find', () => {
       ]
     });
   });
-  it('should throw error', async () => {
+  it('should throw error empty data received', async () => {
+    const n = new Date().toUTCString();
+    const res = client(
+      'https://api.appsheet.com/api/v2/',
+      'appId',
+      'appName',
+      'secret'
+    ).find('tbl', [
+      { srcName: 'タイトル', dstName: 'title', colType: 'string' }
+    ]);
+    expect(mockAxios.post).toHaveBeenCalledTimes(1);
+    mockAxios.mockResponse({
+      data: ''
+    });
+    await expect(res).rejects.toThrow(
+      'client.find API request error: table = tbl, empty data received'
+    );
+  });
+  it('should throw error at api call failed', async () => {
     const n = new Date().toUTCString();
     const res = client(
       'https://api.appsheet.com/api/v2/',
