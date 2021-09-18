@@ -1,22 +1,37 @@
+import fs from 'fs/promises';
 import { Writable } from 'stream';
-import countChars from './count';
+import { client } from './lib/appsheet';
+import { saveRemoteContents } from './lib/content';
 
 type Opts = {
-  filenames: string[];
   stdout: Writable;
   stderr: Writable;
+  dstContentsDir: string;
+  dstImagesDir: string;
+  apiBaseURL: string;
+  appId: string;
+  appName: string;
+  tableName: string;
+  mapCols: string;
+  accessKey: string;
 };
-const cli = async ({ filenames, stdout, stderr }: Opts): Promise<number> => {
+const cli = async (opts: Opts): Promise<number> => {
+  let cliErr: Error | null = null;
   try {
-    const len = filenames.length;
-    for (let i = 0; i < len; i++) {
-      const filename = filenames[i];
-      const count = await countChars(filename);
-      stdout.write(`${filename}: ${count} chars\n`);
-    }
+    const mapCol = JSON.parse((await fs.readFile(opts.mapCols)).toString());
+    cliErr = await saveRemoteContents(
+      client(opts.apiBaseURL, opts.appId, opts.appName, opts.accessKey),
+      opts.tableName,
+      mapCol,
+      opts.dstContentsDir,
+      opts.dstImagesDir
+    );
   } catch (err: any) {
-    stderr.write(err.toString());
-    stderr.write('\n');
+    cliErr = err;
+  }
+  if (cliErr) {
+    opts.stderr.write(cliErr.toString());
+    opts.stderr.write('\n');
     return 1;
   }
   return 0;

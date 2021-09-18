@@ -1,0 +1,12 @@
+[
+    {
+        "srcName": "タイトル",
+        "dstName": "title",
+        "colType": "string"
+    },
+    {
+        "srcName": "画像",
+        "dstName": "image",
+        "colType": "image"
+    }
+]

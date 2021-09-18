@@ -187,6 +187,7 @@ export function client(
           .then((response) => {
             const w = fs.createWriteStream(savePath);
             w.on('close', () => resolve(savePath));
+            w.on('error', (err) => reject(err));
             response.data.pipe(w);
           })
           .catch((err) => {

@@ -10,7 +10,7 @@
     "dist"
   ],
   "bin": {
-    "count": "dist/main.js"
+    "sheet2content": "dist/main.js"
   },
   "scripts": {
     "start": "tsc && node dist/main.js",

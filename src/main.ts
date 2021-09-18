@@ -1,21 +1,75 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
+
 import { hideBin } from 'yargs/helpers';
 import cli from './cli';
 
-const argv = yargs(hideBin(process.argv))
-  .scriptName('count')
-  .usage('$0 [FILE]...')
-  .example('$0 foo.ts bar.ts', 'count chars in files')
-  .demand(1)
-  .help().argv;
-
 (async () => {
+  const argv = await yargs(hideBin(process.argv))
+    .scriptName('sheet2content')
+    .env('SHEET2CONTENT')
+    .command(
+      'save <tableName> <dstContentsDir> <dstImagesDir>',
+      'save remote contents to local directory',
+      (yargs) => {
+        return yargs
+          .positional('tableName', {
+            describe: 'table name to get contents',
+            type: 'string'
+          })
+          .positional('dstContentsDir', {
+            describe: 'contens directory',
+            type: 'string'
+          })
+          .positional('dstImagesDir', {
+            describe: 'images directory',
+            type: 'string'
+          })
+          .demandOption(['tableName'])
+          .demandOption(['dstContentsDir'])
+          .demandOption(['dstImagesDir']);
+      }
+    )
+    .options({
+      'api-base-url': {
+        type: 'string',
+        required: true,
+        description: 'Base URL to API endpoint'
+      },
+      'app-id': {
+        type: 'string',
+        required: true,
+        description: 'app id to API endpoint'
+      },
+      'app-name': {
+        type: 'string',
+        required: true,
+        description: 'app id to iamge adapter endpoint'
+      },
+      'map-cols': {
+        type: 'string',
+        required: true,
+        description: 'json file name that contain mapping columns'
+      },
+      'access-key': {
+        type: 'string',
+        require: true,
+        description: 'access key to get contents'
+      }
+    })
+    .help().argv;
   process.exit(
     await cli({
-      filenames: argv._ as string[],
       stdout: process.stdout,
-      stderr: process.stderr
+      stderr: process.stderr,
+      dstContentsDir: argv.dstContentsDir,
+      dstImagesDir: argv.dstImagesDir,
+      apiBaseURL: argv['api-base-url'],
+      appId: argv['app-id'],
+      appName: argv['app-name'],
+      tableName: argv.tableName,
+      mapCols: argv['map-cols'],
+      accessKey: argv['access-key']
     })
   );
 })();
