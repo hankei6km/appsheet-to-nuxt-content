@@ -174,6 +174,7 @@ export function client(
       src: string,
       dstDir: string
     ): Promise<string> {
+      if (src === '') return '';
       const fileName = path.basename(src);
       const savePath = path.join(dstDir, fileName);
       return new Promise((resolve, reject) => {

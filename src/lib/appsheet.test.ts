@@ -343,6 +343,16 @@ describe('client.saveImage', () => {
       '/path/to/static/image.jpg'
     );
   });
+  it('should return blank', async () => {
+    const res = client(
+      'https://api.appsheet.com/api/v2/',
+      'appId',
+      'appName',
+      'secret'
+    ).saveImage('tbl', '', '/path/to/static');
+    expect(mockAxios.request).toHaveBeenCalledTimes(0);
+    await expect(res).resolves.toEqual('');
+  });
   it('should throw error', async () => {
     const res = client(
       'https://api.appsheet.com/api/v2/',
