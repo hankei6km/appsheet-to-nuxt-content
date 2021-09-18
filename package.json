@@ -1,5 +1,5 @@
 {
-  "name": "appsheet-to-nuxt-content",
+  "name": "@hankei6km/appsheet-to-nuxt-content",
   "version": "0.1.0",
   "description": "save contents from AppSheet for use with nuxt-content",
   "license": "MIT",
