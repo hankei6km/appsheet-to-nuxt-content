@@ -124,12 +124,25 @@ export function imageURL(
   return '';
 }
 
+export type Client = {
+  find: (
+    tableName: string,
+    mapCols: MapCols,
+    props?: Record<string, string>
+  ) => Promise<FindResult>;
+  saveImage: (
+    tableName: string,
+    src: string,
+    dstDir: string
+  ) => Promise<string>;
+};
+
 export function client(
   apiBaseURL: string,
   appId: string,
   appName: string,
   accessKey: string
-) {
+): Client {
   return {
     find: async function (
       tableName: string,
