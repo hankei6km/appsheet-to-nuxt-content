@@ -46,8 +46,8 @@ export function mappingCols(s: any, m: MapCols): BaseCols {
   const ret: BaseCols = {
     _RowNumber: s._RowNumber !== undefined ? s._RowNumber! : -1,
     id,
-    created: s.created ? new Date(s.created) : n,
-    updated: s.updated ? new Date(s.updated) : n
+    createdAt: s.createdAt ? new Date(s.createdAt) : n,
+    updatedAt: s.updatedAt ? new Date(s.updatedAt) : n
   };
   m.forEach(({ srcName, dstName, colType }) => {
     const srcColType = typeof s[srcName];

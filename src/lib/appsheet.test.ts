@@ -85,8 +85,8 @@ describe('mappingCols', () => {
         {
           _RowNumber: 1,
           id: 'idstring',
-          created: n,
-          updated: n,
+          createdAt: n,
+          updatedAt: n,
           タイトル: 'Title',
           回数: 21,
           タイムスタンプ: n,
@@ -118,8 +118,8 @@ describe('mappingCols', () => {
     ).toEqual({
       _RowNumber: 1,
       id: 'idstring',
-      created: new Date(n),
-      updated: new Date(n),
+      createdAt: new Date(n),
+      updatedAt: new Date(n),
       title: 'Title',
       count: 21,
       timestamp: new Date(n),
@@ -133,8 +133,8 @@ describe('mappingCols', () => {
         {
           _RowNumber: 1,
           id: 'id.string',
-          created: n,
-          updated: n,
+          createdAt: n,
+          updatedAt: n,
           名前: 'file.md'
         },
         [
@@ -152,8 +152,8 @@ describe('mappingCols', () => {
       mappingCols(
         {
           _RowNumber: 1,
-          created: n,
-          updated: n,
+          createdAt: n,
+          updatedAt: n,
           名前: 'file.md'
         },
         [
@@ -172,8 +172,8 @@ describe('mappingCols', () => {
         {
           _RowNumber: 1,
           id: 'idstring',
-          created: n,
-          updated: n,
+          createdAt: n,
+          updatedAt: n,
           名前: 'file.md'
         },
         [
@@ -195,8 +195,8 @@ describe('mappingCols', () => {
         {
           _RowNumber: 1,
           id: 'idstring',
-          created: n,
-          updated: n,
+          createdAt: n,
+          updatedAt: n,
           回数: '21'
         },
         [
@@ -271,15 +271,15 @@ describe('client.find', () => {
         {
           _RowNumber: 1,
           id: 'idstring1',
-          created: n,
-          updated: n,
+          createdAt: n,
+          updatedAt: n,
           タイトル: 'Title1'
         },
         {
           _RowNumber: 2,
           id: 'idstring2',
-          created: n,
-          updated: n,
+          createdAt: n,
+          updatedAt: n,
           タイトル: 'Title2'
         }
       ]
@@ -289,15 +289,15 @@ describe('client.find', () => {
         {
           _RowNumber: 1,
           id: 'idstring1',
-          created: new Date(n),
-          updated: new Date(n),
+          createdAt: new Date(n),
+          updatedAt: new Date(n),
           title: 'Title1'
         },
         {
           _RowNumber: 2,
           id: 'idstring2',
-          created: new Date(n),
-          updated: new Date(n),
+          createdAt: new Date(n),
+          updatedAt: new Date(n),
           title: 'Title2'
         }
       ]

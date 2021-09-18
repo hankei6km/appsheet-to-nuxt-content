@@ -15,7 +15,7 @@ export async function saveContentFile(
   const savePath = `${path.resolve(dstDir, cols.id)}.md`;
 
   try {
-    const { content, created, updated, ...metaData } = cols;
+    const { content, ...metaData } = cols;
     const file = matter.stringify(content || '', { ...metaData, position });
     await fs.writeFile(savePath, file);
   } catch (err: any) {

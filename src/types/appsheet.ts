@@ -7,8 +7,8 @@ export type APIActionBody = {
 export type BaseCols = {
   _RowNumber: number;
   id: string;
-  created: Date;
-  updated: Date;
+  createdAt: Date;
+  updatedAt: Date;
 } & Record<string, any>;
 
 export type MapCols = {

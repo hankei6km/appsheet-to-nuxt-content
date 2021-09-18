@@ -75,8 +75,8 @@ describe('saveContentFile()', () => {
       {
         _RowNumber: 1,
         id: 'idstring',
-        created: new Date('2021-09-17T16:50:56.000Z'),
-        updated: new Date('2021-09-17T17:50:56.000Z'),
+        createdAt: new Date('2021-09-17T16:50:56.000Z'),
+        updatedAt: new Date('2021-09-17T17:50:56.000Z'),
         title: 'Title',
         content: 'markdown'
       },
@@ -91,6 +91,8 @@ describe('saveContentFile()', () => {
       `---
 _RowNumber: 1
 id: idstring
+createdAt: 2021-09-17T16:50:56.000Z
+updatedAt: 2021-09-17T17:50:56.000Z
 title: Title
 position: 0
 ---
@@ -104,8 +106,8 @@ markdown
       {
         _RowNumber: 1,
         id: 'idstring',
-        created: new Date(n),
-        updated: new Date(n),
+        createdAt: new Date(n),
+        updatedAt: new Date(n),
         title: 'Title',
         count: 21,
         timestamp: new Date(n),
@@ -125,8 +127,8 @@ describe('saveRemoteContents()', () => {
       {
         _RowNumber: 1,
         id: 'idstring1',
-        created: new Date('2021-09-17T16:50:56.000Z'),
-        updated: new Date('2021-09-17T17:50:56.000Z'),
+        createdAt: new Date('2021-09-17T16:50:56.000Z'),
+        updatedAt: new Date('2021-09-17T17:50:56.000Z'),
         title: 'Title1',
         image: 'アプリ_Images/test1.png',
         content: 'markdown1'
@@ -134,8 +136,8 @@ describe('saveRemoteContents()', () => {
       {
         _RowNumber: 2,
         id: 'idstring2',
-        created: new Date('2022-09-27T26:50:56.000Z'),
-        updated: new Date('2022-09-27T27:50:56.000Z'),
+        createdAt: new Date('2022-09-27T16:50:56.000Z'),
+        updatedAt: new Date('2022-09-27T17:50:56.000Z'),
         title: 'Title2',
         image: 'アプリ_Images/test2.png',
         content: 'markdown2'
@@ -192,8 +194,8 @@ describe('saveRemoteContents()', () => {
       {
         _RowNumber: 1,
         id: 'idstring1',
-        created: new Date('2021-09-17T16:50:56.000Z'),
-        updated: new Date('2021-09-17T17:50:56.000Z')
+        createdAt: new Date('2021-09-17T16:50:56.000Z'),
+        updatedAt: new Date('2021-09-17T17:50:56.000Z')
       }
     ]);
     const client = require('./appsheet')._getMocks().mockClient();
