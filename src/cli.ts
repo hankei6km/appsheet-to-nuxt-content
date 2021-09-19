@@ -14,6 +14,7 @@ type Opts = {
   tableName: string;
   mapCols: string;
   accessKey: string;
+  staticRoot: string;
 };
 const cli = async (opts: Opts): Promise<number> => {
   let cliErr: Error | null = null;
@@ -24,7 +25,8 @@ const cli = async (opts: Opts): Promise<number> => {
       opts.tableName,
       mapCol,
       opts.dstContentsDir,
-      opts.dstImagesDir
+      opts.dstImagesDir,
+      opts.staticRoot
     );
   } catch (err: any) {
     cliErr = err;

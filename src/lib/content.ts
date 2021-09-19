@@ -30,8 +30,10 @@ export async function saveRemoteContents(
   tableName: string,
   mapCols: MapCols,
   dstContentDir: string,
-  dstImagesDir: string
+  dstImagesDir: string,
+  staticRoot: string
 ): Promise<Error | null> {
+  const staticRootLen = staticRoot.length;
   let ret: Error | null = null;
   try {
     const { rows } = await client.find(tableName, mapCols);
@@ -46,7 +48,16 @@ export async function saveRemoteContents(
             ({ dstName, colType }) => dstName === c[0] && colType === 'image'
           ) >= 0
         ) {
-          c[1] = await client.saveImage(tableName, c[1], dstImagesDir);
+          const imagePath = await client.saveImage(
+            tableName,
+            c[1],
+            dstImagesDir
+          );
+          if (imagePath.startsWith(staticRoot)) {
+            c[1] = imagePath.substring(staticRootLen);
+          } else {
+            c[1] = imagePath;
+          }
         }
       }
       const cols: BaseCols = { ...rows[idx] };

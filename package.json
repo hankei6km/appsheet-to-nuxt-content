@@ -1,6 +1,6 @@
 {
   "name": "@hankei6km/appsheet-to-nuxt-content",
-  "version": "0.1.1-pre.0",
+  "version": "0.1.1-pre.1",
   "description": "save contents from AppSheet for use with nuxt-content",
   "license": "MIT",
   "author": "hankei6km <hankei6km@gmail.com> (https://github.com/hankei6km)",
