@@ -36,12 +36,21 @@ export type MapColsImage = {
   colType: 'image';
 } & MapColsBase;
 
+export type MapColsEnum = {
+  colType: 'enum';
+  replace: {
+    pattern: string | RegExp;
+    replacement: string;
+  }[];
+} & MapColsBase;
+
 export type MapCols = (
   | MapColsId
   | MapColsNumber
   | MapColsString
   | MapColsDatetime
   | MapColsImage
+  | MapColsEnum
 )[];
 
 export type FindResult = {

@@ -40,7 +40,7 @@ function throwInvalidType(
   );
 }
 
-export function mappingCols(s: any, m: MapCols): BaseCols {
+export function mappingCols(s: any, mapCols: MapCols): BaseCols {
   const n = new Date();
   const id = validId(s.id) ? s.id : throwInvalidId(s.id, 'id', 'id', 'id');
   const ret: BaseCols = {
@@ -49,37 +49,51 @@ export function mappingCols(s: any, m: MapCols): BaseCols {
     createdAt: s.createdAt ? new Date(s.createdAt) : n,
     updatedAt: s.updatedAt ? new Date(s.updatedAt) : n
   };
-  m.forEach(({ srcName, dstName, colType }) => {
-    const srcColType = typeof s[srcName];
-    switch (colType) {
+  mapCols.forEach((m) => {
+    const srcColType = typeof s[m.srcName];
+    switch (m.colType) {
       case 'id':
         if (srcColType === 'number' || srcColType === 'string') {
-          if (validId(s[srcName])) {
-            ret[dstName] = `${s[srcName]}`;
+          if (validId(s[m.srcName])) {
+            ret[m.dstName] = `${s[m.srcName]}`;
           } else {
-            throwInvalidId(s[srcName], srcName, dstName, colType);
+            throwInvalidId(s[m.srcName], m.srcName, m.dstName, m.colType);
           }
         } else {
-          throwInvalidType(srcColType, srcName, dstName, colType);
+          throwInvalidType(srcColType, m.srcName, m.dstName, m.colType);
         }
         break;
       case 'number':
         if (srcColType === 'number') {
-          ret[dstName] = s[srcName];
+          ret[m.dstName] = s[m.srcName];
         } else {
-          throwInvalidType(srcColType, srcName, dstName, colType);
+          throwInvalidType(srcColType, m.srcName, m.dstName, m.colType);
         }
         break;
       case 'string':
       case 'image': // この時点では文字列として扱う(保存時にファイルをダウンロードする).
         if (srcColType === 'string' || srcColType === 'number') {
-          ret[dstName] = `${s[srcName]}`;
+          ret[m.dstName] = `${s[m.srcName]}`;
         } else {
-          ret[dstName] = `${s[srcName] || ''}`;
+          ret[m.dstName] = `${s[m.srcName] || ''}`;
         }
         break;
       case 'datetime':
-        ret[dstName] = new Date(`${s[srcName]}`);
+        ret[m.dstName] = new Date(`${s[m.srcName]}`);
+        break;
+      case 'enum':
+        const str = `${s[m.srcName]}`;
+        const matchIdx = m.replace.findIndex(({ pattern }) =>
+          str.match(pattern)
+        );
+        if (matchIdx >= 0) {
+          ret[m.dstName] = str.replace(
+            m.replace[matchIdx].pattern,
+            m.replace[matchIdx].replacement
+          );
+        } else {
+          ret[m.dstName] = str;
+        }
         break;
     }
   });

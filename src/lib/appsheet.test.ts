@@ -90,7 +90,9 @@ describe('mappingCols', () => {
           タイトル: 'Title',
           回数: 21,
           タイムスタンプ: n,
-          画像: 'アプリ_Images/test.png'
+          画像: 'アプリ_Images/test.png',
+          色: '赤',
+          背景色: '青'
         },
         [
           {
@@ -112,6 +114,21 @@ describe('mappingCols', () => {
             srcName: '画像',
             dstName: 'image',
             colType: 'image'
+          },
+          {
+            srcName: '色',
+            dstName: 'color',
+            colType: 'enum',
+            replace: []
+          },
+          {
+            srcName: '背景色',
+            dstName: 'bgColor',
+            colType: 'enum',
+            replace: [
+              { pattern: '赤', replacement: 'red' },
+              { pattern: '青', replacement: 'blue' }
+            ]
           }
         ]
       )
@@ -123,7 +140,9 @@ describe('mappingCols', () => {
       title: 'Title',
       count: 21,
       timestamp: new Date(n),
-      image: 'アプリ_Images/test.png'
+      image: 'アプリ_Images/test.png',
+      color: '赤',
+      bgColor: 'blue'
     });
   });
   test('should throw invalid id error ', () => {
