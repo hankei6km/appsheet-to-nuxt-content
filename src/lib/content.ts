@@ -46,7 +46,7 @@ export function dimensionsValue(
 
 type ImageInfo = {
   url: string; // 基本的
-  size: ISize;
+  size: {} | ISize;
   meta: Record<string, any>; //  定義のみ.
 };
 
@@ -54,13 +54,16 @@ export async function saveImageFile(
   client: Client,
   tableName: string,
   src: string,
-  dstImagesDir: string
+  dstImagesDir: string,
+  imageInfo: boolean
 ): Promise<ImageInfo> {
   const imagePath = await client.saveImage(tableName, src, dstImagesDir);
   return {
     url: imagePath,
     // TODO: orientation の処理を検討(おそらく raw などでの補正? がいると思う).
-    size: await sizeOf(imagePath), // Promise が返ってくるのだが?
+    size: imageInfo
+      ? await sizeOf(imagePath) // Promise が返ってくるのだが?
+      : {}, // { width: undefined, height: undefined } の代わり.
     meta: {}
   };
 }
@@ -72,6 +75,7 @@ export type SaveRemoteContentsOptions = {
   dstContentsDir: string;
   dstImagesDir: string;
   staticRoot: string;
+  imageInfo: boolean;
 };
 
 export async function saveRemoteContents({
@@ -80,7 +84,8 @@ export async function saveRemoteContents({
   mapCols,
   dstContentsDir,
   dstImagesDir,
-  staticRoot
+  staticRoot,
+  imageInfo
 }: SaveRemoteContentsOptions): Promise<Error | null> {
   const staticRootLen = staticRoot.length;
   let ret: Error | null = null;
@@ -97,19 +102,20 @@ export async function saveRemoteContents({
             ({ dstName, colType }) => dstName === c[0] && colType === 'image'
           ) >= 0
         ) {
-          const imageInfo = await saveImageFile(
+          const info = await saveImageFile(
             client,
             tableName,
             c[1],
-            dstImagesDir
+            dstImagesDir,
+            imageInfo
           );
-          if (imageInfo.url.startsWith(staticRoot)) {
+          if (info.url.startsWith(staticRoot)) {
             c[1] = {
-              ...imageInfo,
-              url: imageInfo.url.substring(staticRootLen)
+              ...info,
+              url: info.url.substring(staticRootLen)
             };
           } else {
-            c[1] = imageInfo;
+            c[1] = info;
           }
         }
       }

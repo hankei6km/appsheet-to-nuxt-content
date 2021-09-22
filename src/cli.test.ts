@@ -50,7 +50,8 @@ describe('cli()', () => {
       mapCols: 'test/assets/mapcols.json',
       tableName: 'tbl',
       accessKey: 'secret',
-      staticRoot: '/static'
+      staticRoot: '/static',
+      imageInfo: true
     });
     expect(await res).toEqual(0);
     const { mockSaveRemoteContents } = require('./lib/content')._getMocks();
@@ -72,7 +73,8 @@ describe('cli()', () => {
         ],
         dstContentsDir: '/contents/tbl',
         dstImagesDir: '/static/tbl',
-        staticRoot: '/static'
+        staticRoot: '/static',
+        imageInfo: true
       }
     ]);
     expect(outData).toEqual('');
@@ -98,7 +100,8 @@ describe('cli()', () => {
       mapCols: 'test/assets/mapcols.json',
       tableName: 'tbl',
       accessKey: 'secret',
-      staticRoot: '/static'
+      staticRoot: '/static',
+      imageInfo: true
     });
     expect(await res).toEqual(1);
     expect(outData).toEqual('');

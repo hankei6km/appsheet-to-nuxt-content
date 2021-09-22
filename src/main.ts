@@ -18,6 +18,12 @@ import cli from './cli';
               type: 'string',
               defult: 'static/',
               description: 'root of static path to trim image path'
+            },
+
+            'image-info': {
+              type: 'boolean',
+              defult: 'false',
+              description: 'extract information of image(size, meta)'
             }
           })
           .positional('tableName', {
@@ -78,7 +84,8 @@ import cli from './cli';
       tableName: argv.tableName,
       mapCols: argv['map-cols'],
       accessKey: argv['access-key'],
-      staticRoot: argv['static-root'] || 'static/'
+      staticRoot: argv['static-root'] || 'static/',
+      imageInfo: argv['image-info'] || false
     })
   );
 })();

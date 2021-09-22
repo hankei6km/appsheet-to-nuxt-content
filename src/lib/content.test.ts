@@ -179,7 +179,8 @@ describe('saveRemoteContents()', () => {
       mapCols,
       dstContentsDir: '/path/content',
       dstImagesDir: '/path/static/images',
-      staticRoot: '/path/static'
+      staticRoot: '/path/static',
+      imageInfo: true
     });
     await expect(res).resolves.toEqual(null);
     const { mockClientFind, mockClientSaveImage } =
@@ -215,6 +216,38 @@ describe('saveRemoteContents()', () => {
     expect(mockWriteFile.mock.calls[1][1]).toContain('position: 1');
     expect(mockWriteFile.mock.calls[1][1]).toContain('markdown2');
   });
+  it('should get remote content and save as local files without image info', async () => {
+    const client = require('./appsheet')._getMocks().mockClient();
+    const mapCols: MapCols = [
+      { srcName: 'タイトル', dstName: 'title', colType: 'string' },
+      { srcName: '画像', dstName: 'image', colType: 'image' }
+    ];
+    require('./appsheet')._reset([
+      {
+        _RowNumber: 1,
+        id: 'idstring1',
+        createdAt: new Date('2021-09-17T16:50:56.000Z'),
+        updatedAt: new Date('2021-09-17T17:50:56.000Z'),
+        title: 'Title1',
+        image: 'アプリ_Images/test1.png',
+        content: 'markdown1'
+      }
+    ]);
+    const res = saveRemoteContents({
+      client,
+      tableName: 'tbl',
+      mapCols,
+      dstContentsDir: '/path/content',
+      dstImagesDir: '/path/static/images',
+      staticRoot: '/path/static',
+      imageInfo: false
+    });
+    await expect(res).resolves.toEqual(null);
+    const { mockWriteFile } = require('fs/promises')._getMocks();
+    expect(mockWriteFile.mock.calls[0][1]).toContain('url: /images/test1.png');
+    expect(mockWriteFile.mock.calls[0][1]).not.toContain('width: 200');
+    expect(mockWriteFile.mock.calls[0][1]).not.toContain('height: 100');
+  });
   it('should return error', async () => {
     require('./appsheet')._reset([
       {
@@ -231,7 +264,8 @@ describe('saveRemoteContents()', () => {
       mapCols: [],
       dstContentsDir: '/error',
       dstImagesDir: '/path/static/images',
-      staticRoot: '/path/static'
+      staticRoot: '/path/static',
+      imageInfo: true
     });
     expect(String(await res)).toMatch(/dummy error/);
   });

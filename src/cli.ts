@@ -16,6 +16,7 @@ type Opts = {
   mapCols: string;
   accessKey: string;
   staticRoot: string;
+  imageInfo: boolean;
 };
 const cli = async ({
   command,
@@ -29,7 +30,8 @@ const cli = async ({
   tableName,
   mapCols,
   accessKey,
-  staticRoot
+  staticRoot,
+  imageInfo
 }: Opts): Promise<number> => {
   let cliErr: Error | null = null;
   try {
@@ -41,7 +43,8 @@ const cli = async ({
           mapCols: JSON.parse((await fs.readFile(mapCols)).toString()),
           dstContentsDir,
           dstImagesDir,
-          staticRoot
+          staticRoot,
+          imageInfo
         });
         break;
     }
