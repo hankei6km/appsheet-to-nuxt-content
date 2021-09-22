@@ -1,7 +1,6 @@
 import { PassThrough } from 'stream';
 import cli from './cli';
-import { Client } from './lib/appsheet';
-import { MapCols } from './types/appsheet';
+import { SaveRemoteContentsOptions } from './lib/content';
 
 jest.mock('./lib/content', () => {
   const mockSaveRemoteContents = jest.fn();
@@ -10,14 +9,8 @@ jest.mock('./lib/content', () => {
     mockSaveRemoteContents
       .mockReset()
       .mockImplementation(
-        async (
-          client: Client,
-          tableName: string,
-          mapCols: MapCols,
-          dstContentDir: string,
-          dstImageDir: string
-        ) => {
-          if (dstContentDir.match(/error/)) {
+        async ({ dstContentsDir }: SaveRemoteContentsOptions) => {
+          if (dstContentsDir.match(/error/)) {
             return new Error('dummy error');
           }
           return null;
@@ -61,23 +54,25 @@ describe('cli()', () => {
     expect(await res).toEqual(0);
     const { mockSaveRemoteContents } = require('./lib/content')._getMocks();
     expect(mockSaveRemoteContents.mock.calls[0]).toEqual([
-      expect.any(Object),
-      'tbl',
-      [
-        {
-          srcName: 'タイトル',
-          dstName: 'title',
-          colType: 'string'
-        },
-        {
-          srcName: '画像',
-          dstName: 'image',
-          colType: 'image'
-        }
-      ],
-      '/contents/tbl',
-      '/static/tbl',
-      '/static'
+      {
+        client: expect.any(Object),
+        tableName: 'tbl',
+        mapCols: [
+          {
+            srcName: 'タイトル',
+            dstName: 'title',
+            colType: 'string'
+          },
+          {
+            srcName: '画像',
+            dstName: 'image',
+            colType: 'image'
+          }
+        ],
+        dstContentsDir: '/contents/tbl',
+        dstImagesDir: '/static/tbl',
+        staticRoot: '/static'
+      }
     ]);
     expect(outData).toEqual('');
     expect(errData).toEqual('');

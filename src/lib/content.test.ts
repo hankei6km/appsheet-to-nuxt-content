@@ -173,14 +173,14 @@ describe('saveRemoteContents()', () => {
       { srcName: 'タイトル', dstName: 'title', colType: 'string' },
       { srcName: '画像', dstName: 'image', colType: 'image' }
     ];
-    const res = saveRemoteContents(
+    const res = saveRemoteContents({
       client,
-      'tbl',
+      tableName: 'tbl',
       mapCols,
-      '/path/content',
-      '/path/static/images',
-      '/path/static'
-    );
+      dstContentsDir: '/path/content',
+      dstImagesDir: '/path/static/images',
+      staticRoot: '/path/static'
+    });
     await expect(res).resolves.toEqual(null);
     const { mockClientFind, mockClientSaveImage } =
       require('./appsheet')._getMocks();
@@ -225,14 +225,14 @@ describe('saveRemoteContents()', () => {
       }
     ]);
     const client = require('./appsheet')._getMocks().mockClient();
-    const res = saveRemoteContents(
+    const res = saveRemoteContents({
       client,
-      'tbl',
-      [],
-      '/error',
-      '/path/static/images',
-      '/path/static'
-    );
+      tableName: 'tbl',
+      mapCols: [],
+      dstContentsDir: '/error',
+      dstImagesDir: '/path/static/images',
+      staticRoot: '/path/static'
+    });
     expect(String(await res)).toMatch(/dummy error/);
   });
 });

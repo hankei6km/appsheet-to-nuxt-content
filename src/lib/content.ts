@@ -65,14 +65,23 @@ export async function saveImageFile(
   };
 }
 
-export async function saveRemoteContents(
-  client: Client,
-  tableName: string,
-  mapCols: MapCols,
-  dstContentDir: string,
-  dstImagesDir: string,
-  staticRoot: string
-): Promise<Error | null> {
+export type SaveRemoteContentsOptions = {
+  client: Client;
+  tableName: string;
+  mapCols: MapCols;
+  dstContentsDir: string;
+  dstImagesDir: string;
+  staticRoot: string;
+};
+
+export async function saveRemoteContents({
+  client,
+  tableName,
+  mapCols,
+  dstContentsDir,
+  dstImagesDir,
+  staticRoot
+}: SaveRemoteContentsOptions): Promise<Error | null> {
   const staticRootLen = staticRoot.length;
   let ret: Error | null = null;
   try {
@@ -106,7 +115,7 @@ export async function saveRemoteContents(
       }
       const cols: BaseCols = { ...rows[idx] };
       colsArray.forEach(([k, v]) => (cols[k] = v));
-      ret = await saveContentFile(cols, mapCols, dstContentDir, idx);
+      ret = await saveContentFile(cols, mapCols, dstContentsDir, idx);
       if (ret) {
         break;
       }
