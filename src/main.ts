@@ -73,19 +73,21 @@ import cli from './cli';
     .help().argv;
   process.exit(
     await cli({
-      command: `$argv._[0]}`,
+      command: `${argv._[0]}`,
       stdout: process.stdout,
       stderr: process.stderr,
-      dstContentsDir: argv.dstContentsDir,
-      dstImagesDir: argv.dstImagesDir,
       apiBaseURL: argv['api-base-url'],
       appId: argv['app-id'],
       appName: argv['app-name'],
-      tableName: argv.tableName,
       mapCols: argv['map-cols'],
       accessKey: argv['access-key'],
-      staticRoot: argv['static-root'] || 'static/',
-      imageInfo: argv['image-info'] || false
+      saveOpts: {
+        tableName: argv.tableName,
+        dstContentsDir: argv.dstContentsDir,
+        dstImagesDir: argv.dstImagesDir,
+        staticRoot: argv['static-root'] || 'static/',
+        imageInfo: argv['image-info'] || false
+      }
     })
   );
 })();

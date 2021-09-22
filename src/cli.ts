@@ -3,35 +3,35 @@ import { Writable } from 'stream';
 import { client } from './lib/appsheet';
 import { saveRemoteContents } from './lib/content';
 
+type SaveOpts = {
+  tableName: string;
+  dstContentsDir: string;
+  dstImagesDir: string;
+  staticRoot: string;
+  imageInfo: boolean;
+};
+
 type Opts = {
   command: string;
   stdout: Writable;
   stderr: Writable;
-  dstContentsDir: string;
-  dstImagesDir: string;
   apiBaseURL: string;
   appId: string;
   appName: string;
-  tableName: string;
   mapCols: string;
   accessKey: string;
-  staticRoot: string;
-  imageInfo: boolean;
+  saveOpts: SaveOpts;
 };
 const cli = async ({
   command,
   stdout,
   stderr,
-  dstContentsDir,
-  dstImagesDir,
   apiBaseURL,
   appId,
   appName,
-  tableName,
   mapCols,
   accessKey,
-  staticRoot,
-  imageInfo
+  saveOpts
 }: Opts): Promise<number> => {
   let cliErr: Error | null = null;
   try {
@@ -39,12 +39,8 @@ const cli = async ({
       case 'save':
         cliErr = await saveRemoteContents({
           client: client(apiBaseURL, appId, appName, accessKey),
-          tableName,
           mapCols: JSON.parse((await fs.readFile(mapCols)).toString()),
-          dstContentsDir,
-          dstImagesDir,
-          staticRoot,
-          imageInfo
+          ...saveOpts
         });
         break;
     }
