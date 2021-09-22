@@ -26,6 +26,30 @@ jest.mock('fs/promises', () => {
   };
 });
 
+jest.mock('image-size', () => {
+  const mockSizeOfFn = async (pathName: string) => {
+    if (pathName.match(/error/)) {
+      throw new Error('dummy error');
+    }
+    return { width: 200, height: 100 };
+  };
+  let mockSizeOf = jest.fn();
+  const reset = () => {
+    mockSizeOf.mockReset().mockImplementation(mockSizeOfFn);
+  };
+  reset();
+  return {
+    // https://remarkablemark.org/blog/2018/06/28/jest-mock-default-named-export/
+    __esModule: true,
+    default: mockSizeOf,
+    sizeOf: mockSizeOf,
+    _reset: reset,
+    _getMocks: () => ({
+      mockSizeOf
+    })
+  };
+});
+
 jest.mock('./appsheet', () => {
   let mockClientFind = jest.fn();
   let mockClientSaveImage = jest.fn();
@@ -66,6 +90,7 @@ jest.mock('./appsheet', () => {
 
 afterEach(() => {
   require('fs/promises')._reset();
+  require('image-size')._reset();
   require('./appsheet')._reset();
 });
 
@@ -175,18 +200,18 @@ describe('saveRemoteContents()', () => {
       '/path/content/idstring1.md'
     );
     expect(mockWriteFile.mock.calls[0][1]).toContain('title: Title1');
-    expect(mockWriteFile.mock.calls[0][1]).toContain(
-      'image: /images/test1.png'
-    );
+    expect(mockWriteFile.mock.calls[0][1]).toContain('url: /images/test1.png');
+    expect(mockWriteFile.mock.calls[0][1]).toContain('width: 200');
+    expect(mockWriteFile.mock.calls[0][1]).toContain('height: 100');
     expect(mockWriteFile.mock.calls[0][1]).toContain('position: 0');
     expect(mockWriteFile.mock.calls[0][1]).toContain('markdown1');
     expect(mockWriteFile.mock.calls[1][0]).toEqual(
       '/path/content/idstring2.md'
     );
     expect(mockWriteFile.mock.calls[1][1]).toContain('title: Title2');
-    expect(mockWriteFile.mock.calls[1][1]).toContain(
-      'image: /images/test2.png'
-    );
+    expect(mockWriteFile.mock.calls[1][1]).toContain('url: /images/test2.png');
+    expect(mockWriteFile.mock.calls[0][1]).toContain('width: 200');
+    expect(mockWriteFile.mock.calls[0][1]).toContain('height: 100');
     expect(mockWriteFile.mock.calls[1][1]).toContain('position: 1');
     expect(mockWriteFile.mock.calls[1][1]).toContain('markdown2');
   });
