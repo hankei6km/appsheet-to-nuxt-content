@@ -30,7 +30,7 @@ jest.mock('./lib/content', () => {
 afterEach(() => {});
 
 describe('cli()', () => {
-  it('should return stdout with exitcode=0', async () => {
+  it('should return stdout with exitcode=0 from save command', async () => {
     const stdout = new PassThrough();
     const stderr = new PassThrough();
     let outData = '';
@@ -39,6 +39,7 @@ describe('cli()', () => {
     stderr.on('data', (d) => (errData = errData + d));
 
     const res = cli({
+      command: 'save',
       stdout,
       stderr,
       dstContentsDir: '/contents/tbl',
@@ -77,7 +78,7 @@ describe('cli()', () => {
     expect(outData).toEqual('');
     expect(errData).toEqual('');
   });
-  it('should return stderr with exitcode=1', async () => {
+  it('should return stderr with exitcode=1 from save coomand', async () => {
     const stdout = new PassThrough();
     const stderr = new PassThrough();
     let outData = '';
@@ -86,6 +87,7 @@ describe('cli()', () => {
     stderr.on('data', (d) => (errData = errData + d));
 
     const res = cli({
+      command: 'save',
       stdout,
       stderr,
       dstContentsDir: '/error',

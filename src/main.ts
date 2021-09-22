@@ -13,6 +13,13 @@ import cli from './cli';
       'save remote contents to local directory',
       (yargs) => {
         return yargs
+          .options({
+            'static-root': {
+              type: 'string',
+              defult: 'static/',
+              description: 'root of static path to trim image path'
+            }
+          })
           .positional('tableName', {
             describe: 'table name to get contents',
             type: 'string'
@@ -55,16 +62,12 @@ import cli from './cli';
         type: 'string',
         require: true,
         description: 'access key to get contents'
-      },
-      'static-root': {
-        type: 'string',
-        defult: 'static/',
-        description: 'root of static path to trim image path'
       }
     })
     .help().argv;
   process.exit(
     await cli({
+      command: `$argv._[0]}`,
       stdout: process.stdout,
       stderr: process.stderr,
       dstContentsDir: argv.dstContentsDir,

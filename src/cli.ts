@@ -4,6 +4,7 @@ import { client } from './lib/appsheet';
 import { saveRemoteContents } from './lib/content';
 
 type Opts = {
+  command: string;
   stdout: Writable;
   stderr: Writable;
   dstContentsDir: string;
@@ -17,6 +18,7 @@ type Opts = {
   staticRoot: string;
 };
 const cli = async ({
+  command,
   stdout,
   stderr,
   dstContentsDir,
@@ -31,14 +33,18 @@ const cli = async ({
 }: Opts): Promise<number> => {
   let cliErr: Error | null = null;
   try {
-    cliErr = await saveRemoteContents({
-      client: client(apiBaseURL, appId, appName, accessKey),
-      tableName,
-      mapCols: JSON.parse((await fs.readFile(mapCols)).toString()),
-      dstContentsDir,
-      dstImagesDir,
-      staticRoot
-    });
+    switch (command) {
+      case 'save':
+        cliErr = await saveRemoteContents({
+          client: client(apiBaseURL, appId, appName, accessKey),
+          tableName,
+          mapCols: JSON.parse((await fs.readFile(mapCols)).toString()),
+          dstContentsDir,
+          dstImagesDir,
+          staticRoot
+        });
+        break;
+    }
   } catch (err: any) {
     cliErr = err;
   }
