@@ -1,6 +1,6 @@
 {
   "name": "@hankei6km/appsheet-to-nuxt-content",
-  "version": "0.1.1-pre.2",
+  "version": "0.1.1-pre.3",
   "description": "save contents from AppSheet for use with nuxt-content",
   "license": "MIT",
   "author": "hankei6km <hankei6km@gmail.com> (https://github.com/hankei6km)",
@@ -36,6 +36,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "gray-matter": "^4.0.3",
+    "image-size": "^1.0.0",
     "jest-mock-axios": "^4.4.0",
     "yargs": "^17.1.1"
   },

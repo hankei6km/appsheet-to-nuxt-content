@@ -26,6 +26,30 @@ jest.mock('fs/promises', () => {
   };
 });
 
+jest.mock('image-size', () => {
+  const mockSizeOfFn = async (pathName: string) => {
+    if (pathName.match(/error/)) {
+      throw new Error('dummy error');
+    }
+    return { width: 200, height: 100 };
+  };
+  let mockSizeOf = jest.fn();
+  const reset = () => {
+    mockSizeOf.mockReset().mockImplementation(mockSizeOfFn);
+  };
+  reset();
+  return {
+    // https://remarkablemark.org/blog/2018/06/28/jest-mock-default-named-export/
+    __esModule: true,
+    default: mockSizeOf,
+    sizeOf: mockSizeOf,
+    _reset: reset,
+    _getMocks: () => ({
+      mockSizeOf
+    })
+  };
+});
+
 jest.mock('./appsheet', () => {
   let mockClientFind = jest.fn();
   let mockClientSaveImage = jest.fn();
@@ -66,6 +90,7 @@ jest.mock('./appsheet', () => {
 
 afterEach(() => {
   require('fs/promises')._reset();
+  require('image-size')._reset();
   require('./appsheet')._reset();
 });
 
@@ -148,14 +173,15 @@ describe('saveRemoteContents()', () => {
       { srcName: 'タイトル', dstName: 'title', colType: 'string' },
       { srcName: '画像', dstName: 'image', colType: 'image' }
     ];
-    const res = saveRemoteContents(
+    const res = saveRemoteContents({
       client,
-      'tbl',
+      tableName: 'tbl',
       mapCols,
-      '/path/content',
-      '/path/static/images',
-      '/path/static'
-    );
+      dstContentsDir: '/path/content',
+      dstImagesDir: '/path/static/images',
+      staticRoot: '/path/static',
+      imageInfo: true
+    });
     await expect(res).resolves.toEqual(null);
     const { mockClientFind, mockClientSaveImage } =
       require('./appsheet')._getMocks();
@@ -175,20 +201,52 @@ describe('saveRemoteContents()', () => {
       '/path/content/idstring1.md'
     );
     expect(mockWriteFile.mock.calls[0][1]).toContain('title: Title1');
-    expect(mockWriteFile.mock.calls[0][1]).toContain(
-      'image: /images/test1.png'
-    );
+    expect(mockWriteFile.mock.calls[0][1]).toContain('url: /images/test1.png');
+    expect(mockWriteFile.mock.calls[0][1]).toContain('width: 200');
+    expect(mockWriteFile.mock.calls[0][1]).toContain('height: 100');
     expect(mockWriteFile.mock.calls[0][1]).toContain('position: 0');
     expect(mockWriteFile.mock.calls[0][1]).toContain('markdown1');
     expect(mockWriteFile.mock.calls[1][0]).toEqual(
       '/path/content/idstring2.md'
     );
     expect(mockWriteFile.mock.calls[1][1]).toContain('title: Title2');
-    expect(mockWriteFile.mock.calls[1][1]).toContain(
-      'image: /images/test2.png'
-    );
+    expect(mockWriteFile.mock.calls[1][1]).toContain('url: /images/test2.png');
+    expect(mockWriteFile.mock.calls[0][1]).toContain('width: 200');
+    expect(mockWriteFile.mock.calls[0][1]).toContain('height: 100');
     expect(mockWriteFile.mock.calls[1][1]).toContain('position: 1');
     expect(mockWriteFile.mock.calls[1][1]).toContain('markdown2');
+  });
+  it('should get remote content and save as local files without image info', async () => {
+    const client = require('./appsheet')._getMocks().mockClient();
+    const mapCols: MapCols = [
+      { srcName: 'タイトル', dstName: 'title', colType: 'string' },
+      { srcName: '画像', dstName: 'image', colType: 'image' }
+    ];
+    require('./appsheet')._reset([
+      {
+        _RowNumber: 1,
+        id: 'idstring1',
+        createdAt: new Date('2021-09-17T16:50:56.000Z'),
+        updatedAt: new Date('2021-09-17T17:50:56.000Z'),
+        title: 'Title1',
+        image: 'アプリ_Images/test1.png',
+        content: 'markdown1'
+      }
+    ]);
+    const res = saveRemoteContents({
+      client,
+      tableName: 'tbl',
+      mapCols,
+      dstContentsDir: '/path/content',
+      dstImagesDir: '/path/static/images',
+      staticRoot: '/path/static',
+      imageInfo: false
+    });
+    await expect(res).resolves.toEqual(null);
+    const { mockWriteFile } = require('fs/promises')._getMocks();
+    expect(mockWriteFile.mock.calls[0][1]).toContain('url: /images/test1.png');
+    expect(mockWriteFile.mock.calls[0][1]).not.toContain('width: 200');
+    expect(mockWriteFile.mock.calls[0][1]).not.toContain('height: 100');
   });
   it('should return error', async () => {
     require('./appsheet')._reset([
@@ -200,14 +258,15 @@ describe('saveRemoteContents()', () => {
       }
     ]);
     const client = require('./appsheet')._getMocks().mockClient();
-    const res = saveRemoteContents(
+    const res = saveRemoteContents({
       client,
-      'tbl',
-      [],
-      '/error',
-      '/path/static/images',
-      '/path/static'
-    );
+      tableName: 'tbl',
+      mapCols: [],
+      dstContentsDir: '/error',
+      dstImagesDir: '/path/static/images',
+      staticRoot: '/path/static',
+      imageInfo: true
+    });
     expect(String(await res)).toMatch(/dummy error/);
   });
 });

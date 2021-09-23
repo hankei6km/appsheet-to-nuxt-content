@@ -3,6 +3,8 @@ import fs from 'fs/promises';
 import matter from 'gray-matter';
 import { Client } from './appsheet';
 import { BaseCols, MapCols } from '../types/appsheet';
+import sizeOf from 'image-size';
+import { ISize } from 'image-size/dist/types/interface';
 
 export async function saveContentFile(
   cols: BaseCols,
@@ -25,14 +27,66 @@ export async function saveContentFile(
   return ret;
 }
 
-export async function saveRemoteContents(
+export function dimensionsValue(
+  dimensions: ISize,
+  prop: 'width' | 'height'
+): number {
+  let ret = 0;
+  if (Array.isArray(dimensions)) {
+    if (dimensions.length > 0) {
+      const c = dimensions[0];
+      ret = c[prop] !== undefined ? c[prop] : 0;
+    }
+  } else {
+    const p = dimensions[prop];
+    ret = p !== undefined ? p : 0;
+  }
+  return ret;
+}
+
+type ImageInfo = {
+  url: string; // 基本的
+  size: {} | ISize;
+  meta: Record<string, any>; //  定義のみ.
+};
+
+export async function saveImageFile(
   client: Client,
   tableName: string,
-  mapCols: MapCols,
-  dstContentDir: string,
+  src: string,
   dstImagesDir: string,
-  staticRoot: string
-): Promise<Error | null> {
+  imageInfo: boolean
+): Promise<ImageInfo> {
+  const imagePath = await client.saveImage(tableName, src, dstImagesDir);
+  return {
+    url: imagePath,
+    // TODO: orientation の処理を検討(おそらく raw などでの補正? がいると思う).
+    size: imageInfo
+      ? await sizeOf(imagePath) // Promise が返ってくるのだが?
+      : {}, // { width: undefined, height: undefined } の代わり.
+    meta: {}
+  };
+}
+
+export type SaveRemoteContentsOptions = {
+  client: Client;
+  tableName: string;
+  mapCols: MapCols;
+  dstContentsDir: string;
+  dstImagesDir: string;
+  staticRoot: string;
+  imageInfo: boolean;
+};
+
+export async function saveRemoteContents({
+  client,
+  tableName,
+  mapCols,
+  dstContentsDir,
+  dstImagesDir,
+  staticRoot,
+  imageInfo
+}: SaveRemoteContentsOptions): Promise<Error | null> {
   const staticRootLen = staticRoot.length;
   let ret: Error | null = null;
   try {
@@ -48,21 +102,26 @@ export async function saveRemoteContents(
             ({ dstName, colType }) => dstName === c[0] && colType === 'image'
           ) >= 0
         ) {
-          const imagePath = await client.saveImage(
+          const info = await saveImageFile(
+            client,
             tableName,
             c[1],
-            dstImagesDir
+            dstImagesDir,
+            imageInfo
           );
-          if (imagePath.startsWith(staticRoot)) {
-            c[1] = imagePath.substring(staticRootLen);
+          if (info.url.startsWith(staticRoot)) {
+            c[1] = {
+              ...info,
+              url: info.url.substring(staticRootLen)
+            };
           } else {
-            c[1] = imagePath;
+            c[1] = info;
           }
         }
       }
       const cols: BaseCols = { ...rows[idx] };
       colsArray.forEach(([k, v]) => (cols[k] = v));
-      ret = await saveContentFile(cols, mapCols, dstContentDir, idx);
+      ret = await saveContentFile(cols, mapCols, dstContentsDir, idx);
       if (ret) {
         break;
       }
