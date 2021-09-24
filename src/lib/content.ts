@@ -67,9 +67,10 @@ export async function saveImageFile(
   return {
     url: imagePath,
     // TODO: orientation の処理を検討(おそらく raw などでの補正? がいると思う).
-    size: imageInfo
-      ? await sizeOf(imagePath) // Promise が返ってくるのだが?
-      : {}, // { width: undefined, height: undefined } の代わり.
+    size:
+      imageInfo && imagePath
+        ? await sizeOf(imagePath) // Promise が返ってくるのだが?
+        : {}, // { width: undefined, height: undefined } の代わり.
     meta: {}
   };
 }
