@@ -55,15 +55,22 @@ export async function saveImageFile(
   tableName: string,
   src: string,
   dstImagesDir: string,
-  imageInfo: boolean
+  imageInfo: boolean,
+  imageURL: boolean
 ): Promise<ImageInfo> {
-  const imagePath = await client.saveImage(tableName, src, dstImagesDir);
+  const imagePath = await client.saveImage(
+    tableName,
+    src,
+    dstImagesDir,
+    imageURL
+  );
   return {
     url: imagePath,
     // TODO: orientation の処理を検討(おそらく raw などでの補正? がいると思う).
-    size: imageInfo
-      ? await sizeOf(imagePath) // Promise が返ってくるのだが?
-      : {}, // { width: undefined, height: undefined } の代わり.
+    size:
+      imageInfo && imagePath
+        ? await sizeOf(imagePath) // Promise が返ってくるのだが?
+        : {}, // { width: undefined, height: undefined } の代わり.
     meta: {}
   };
 }
@@ -76,6 +83,7 @@ export type SaveRemoteContentsOptions = {
   dstImagesDir: string;
   staticRoot: string;
   imageInfo: boolean;
+  imageURL: boolean;
 };
 
 export async function saveRemoteContents({
@@ -85,7 +93,8 @@ export async function saveRemoteContents({
   dstContentsDir,
   dstImagesDir,
   staticRoot,
-  imageInfo
+  imageInfo,
+  imageURL
 }: SaveRemoteContentsOptions): Promise<Error | null> {
   const staticRootLen = staticRoot.length;
   let ret: Error | null = null;
@@ -107,7 +116,8 @@ export async function saveRemoteContents({
             tableName,
             c[1],
             dstImagesDir,
-            imageInfo
+            imageInfo,
+            imageURL
           );
           if (info.url.startsWith(staticRoot)) {
             c[1] = {

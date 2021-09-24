@@ -8,6 +8,8 @@ import {
   MapCols
 } from '../types/appsheet';
 
+const getTableFileURL = 'https://www.appsheet.com/template/gettablefileurl';
+
 const validIdRegExp = /^[-_0-9a-zA-Z]+$/;
 export function validId(s: string | number): boolean {
   if (typeof s === 'number') {
@@ -133,7 +135,7 @@ export function imageURL(
     q.append('appName', appName);
     q.append('tableName', tableName);
     q.append('fileName', fileName);
-    return `https://www.appsheet.com/template/gettablefileurl?${q.toString()}`;
+    return `${getTableFileURL}?${q.toString()}`;
   }
   return '';
 }
@@ -147,7 +149,8 @@ export type Client = {
   saveImage: (
     tableName: string,
     src: string,
-    dstDir: string
+    dstDir: string,
+    imageURL: boolean
   ) => Promise<string>;
 };
 
@@ -188,16 +191,25 @@ export function client(
     saveImage: async function (
       tableName: string,
       src: string,
-      dstDir: string
+      dstDir: string,
+      useImageURL: boolean
     ): Promise<string> {
-      if (src === '') return '';
-      const fileName = path.basename(src);
+      let fileName = '';
+      if (!useImageURL && src.startsWith(getTableFileURL)) {
+        const q = new URLSearchParams(new URL(src).searchParams);
+        fileName = path.basename(q.get('fileName') || '');
+      } else {
+        fileName = path.basename(src);
+      }
+      if (fileName === '') {
+        return '';
+      }
       const savePath = path.join(dstDir, fileName);
       return new Promise((resolve, reject) => {
         axios
           .request({
             method: 'get',
-            url: imageURL(appName, tableName, src),
+            url: useImageURL ? imageURL(appName, tableName, src) : src,
             responseType: 'stream'
           })
           .then((response) => {

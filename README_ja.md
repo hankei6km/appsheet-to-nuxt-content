@@ -12,11 +12,15 @@
 
 参考: [API: The Essentials | AppSheet Help Center](https://help.appsheet.com/en/articles/1979966-api-the-essentials)
 
-### 画像の許可
+### 画像表示の設定
 (画像を扱うときのみ必要)
 
 - "Security" / "Options" を開く
 - "Require Image and File URL Signing" をオフにする
+
+`--image-url` を指定しない場合は以下も必要。
+
+- 画像 URL が格納される仮想カラムを作成する
 
 参考: [Displaying Images and Documents | AppSheet Help Center](https://help.appsheet.com/en/articles/961605-displaying-images-and-documents)
 
@@ -35,8 +39,8 @@
         "colType": "string"
     },
     {
-        "srcName": "画像",
-        "dstName": "image",
+        "srcName": "メイン画像-url",
+        "dstName": "mainImage",
         "colType": "image"
     }
 ]
@@ -49,11 +53,15 @@
 ```
 SHEET2CONTENT_API_BASE_URL=https://api.appsheet.com/api/v2/
 SHEET2CONTENT_APP_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx
-SHEET2CONTENT_APP_NAME=<app name>-xxxxxxx
 SHEET2CONTENT_MAP_COLS=path/to/mapcols.json
 SHEET2CONTENT_ACCESS_KEY=xx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx
 ```
 
+`--image-url` を指定する場合は以下も必要。
+
+```
+SHEET2CONTENT_APP_NAME=<app name>-xxxxxxx
+```
 
 ## コンテンツを保存
 
@@ -78,7 +86,7 @@ API エンドポイント用の App Id。
 
 #### `appName`
 
-画像アダプター用の App Name。
+画像アダプター用の App Name(画像 URL 変換時に利用される)。
 
 #### `accessKey`
 
@@ -89,29 +97,41 @@ API 用の Access Key。
 `Client`
  
 
-### `saveRemoteContents(client, tableName, mapCols, dstContentDir, dstImagesDir)`
+### `saveRemoteContents(saveRemoteOptions)`
 
 リモートのコンテンツを保存する。
 
-#### `client`
+#### `saveRemoteOptions.client`
 
 AppSheet 用のクライアント。
 
-#### `tableName`
+#### `saveRemoteOptions.tableName`
 
 保存するテーブルの名前。
 
-##### `mapCols`
+##### `saveRemoteOptions.mapCols`
 
 カラムのマップ情報。
 
-##### `dstContentDir`
+##### `saveRemoteOptions.dstContentDir`
  
 コンテンツを保存するディレクトリ。
 
-##### `dstImagesDir`
+##### `saveRemoteOptions.dstImagesDir`
  
 画像を保存するディレクトリ。
+
+##### `saveRemoteOptions.staticRoot`
+ 
+画像パスをトリミングするための STATIC パスのルート。
+
+##### `saveRemoteOptions.imageInfo`
+ 
+画像の情報(size, meta) を取り出す指定。
+
+##### `saveRemoteOptions.imageURL`
+ 
+画像取得する URL を相対パスから生成する指定。
 
 #### returns
 

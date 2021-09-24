@@ -180,7 +180,8 @@ describe('saveRemoteContents()', () => {
       dstContentsDir: '/path/content',
       dstImagesDir: '/path/static/images',
       staticRoot: '/path/static',
-      imageInfo: true
+      imageInfo: true,
+      imageURL: true
     });
     await expect(res).resolves.toEqual(null);
     const { mockClientFind, mockClientSaveImage } =
@@ -189,12 +190,14 @@ describe('saveRemoteContents()', () => {
     expect(mockClientSaveImage.mock.calls[0]).toEqual([
       'tbl',
       'アプリ_Images/test1.png',
-      '/path/static/images'
+      '/path/static/images',
+      true
     ]);
     expect(mockClientSaveImage.mock.calls[1]).toEqual([
       'tbl',
       'アプリ_Images/test2.png',
-      '/path/static/images'
+      '/path/static/images',
+      true
     ]);
     const { mockWriteFile } = require('fs/promises')._getMocks();
     expect(mockWriteFile.mock.calls[0][0]).toEqual(
@@ -240,7 +243,8 @@ describe('saveRemoteContents()', () => {
       dstContentsDir: '/path/content',
       dstImagesDir: '/path/static/images',
       staticRoot: '/path/static',
-      imageInfo: false
+      imageInfo: false,
+      imageURL: false
     });
     await expect(res).resolves.toEqual(null);
     const { mockWriteFile } = require('fs/promises')._getMocks();
@@ -265,7 +269,8 @@ describe('saveRemoteContents()', () => {
       dstContentsDir: '/error',
       dstImagesDir: '/path/static/images',
       staticRoot: '/path/static',
-      imageInfo: true
+      imageInfo: true,
+      imageURL: false
     });
     expect(String(await res)).toMatch(/dummy error/);
   });

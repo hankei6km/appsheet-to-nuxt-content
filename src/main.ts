@@ -19,11 +19,16 @@ import cli from './cli';
               defult: 'static/',
               description: 'root of static path to trim image path'
             },
-
             'image-info': {
               type: 'boolean',
               defult: 'false',
               description: 'extract information of image(size, meta)'
+            },
+            'image-url': {
+              type: 'boolean',
+              defult: 'false',
+              description:
+                'generate image url from rel path to fetch image filee'
             }
           })
           .positional('tableName', {
@@ -56,7 +61,7 @@ import cli from './cli';
       },
       'app-name': {
         type: 'string',
-        required: true,
+        required: false,
         description: 'app id to iamge adapter endpoint'
       },
       'map-cols': {
@@ -78,7 +83,7 @@ import cli from './cli';
       stderr: process.stderr,
       apiBaseURL: argv['api-base-url'],
       appId: argv['app-id'],
-      appName: argv['app-name'],
+      appName: argv['app-name'] || '',
       mapCols: argv['map-cols'],
       accessKey: argv['access-key'],
       saveOpts: {
@@ -86,7 +91,8 @@ import cli from './cli';
         dstContentsDir: argv.dstContentsDir,
         dstImagesDir: argv.dstImagesDir,
         staticRoot: argv['static-root'] || 'static/',
-        imageInfo: argv['image-info'] || false
+        imageInfo: argv['image-info'] || false,
+        imageURL: argv['image-url'] || false
       }
     })
   );

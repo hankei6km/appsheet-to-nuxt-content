@@ -18,6 +18,10 @@ refer: [API: The Essentials | AppSheet Help Center](https://help.appsheet.com/en
 - Open "Security" / "Options"
 - Turn off "Require Image and File URL Signing"
 
+Following setting has requrire when no `--image-url` flag.
+
+- Add virtual column that contained the image URL
+
 refer: [Displaying Images and Documents | AppSheet Help Center](https://help.appsheet.com/en/articles/961605-displaying-images-and-documents)
 
 
@@ -35,8 +39,8 @@ refer: [Displaying Images and Documents | AppSheet Help Center](https://help.app
         "colType": "string"
     },
     {
-        "srcName": "画像",
-        "dstName": "image",
+        "srcName": "メイン画像-url",
+        "dstName": "mainImage",
         "colType": "image"
     }
 ]
@@ -49,11 +53,15 @@ refer: [Displaying Images and Documents | AppSheet Help Center](https://help.app
 ```
 SHEET2CONTENT_API_BASE_URL=https://api.appsheet.com/api/v2/
 SHEET2CONTENT_APP_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx
-SHEET2CONTENT_APP_NAME=<app name>-xxxxxxx
 SHEET2CONTENT_MAP_COLS=path/to/mapcols.json
 SHEET2CONTENT_ACCESS_KEY=xx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx
 ```
 
+Following variable has requrire when use `--image-url` flag.
+
+```
+SHEET2CONTENT_APP_NAME=<app name>-xxxxxxx
+```
 
 ## Save contents
 
@@ -78,7 +86,7 @@ App Id to API endpoint.
 
 #### `appName`
 
-App Name to image adapter endpoint.
+App Name to image adapter endpoint(It used to generate the Image URL).
 
 #### `accessKey`
 
@@ -89,11 +97,11 @@ Access key to get contents.
 `Client`
  
 
-### `saveRemoteContents(client, tableName, mapCols, dstContentDir, dstImagesDir)`
+### `saveRemoteContents(saveRemoteOptions)`
 
 Save remote contens.
 
-#### `client`
+#### `saveRemoteOptions.client`
 
 AppSheet client.
 
@@ -101,17 +109,29 @@ AppSheet client.
 
 Table name to save contents.
 
-##### `mapCols`
+##### `saveRemoteOptions.mapCols`
 
 Colmuns map.
 
-##### `dstContentDir`
+##### `saveRemoteOptions.dstContentDir`
  
 directory to save contents.
 
-##### `dstImagesDir`
+##### `saveRemoteOptions.dstImagesDir`
  
 directory to save images.
+
+##### `saveRemoteOptions.staticRoot`
+ 
+root of static path to trim image path.
+
+##### `saveRemoteOptions.imageInfo`
+ 
+extract information of image(size, meta).
+
+##### `saveRemoteOptions.imageURL`
+ 
+generate image url from rel path to fetch image filee.
 
 #### returns
 

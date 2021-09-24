@@ -9,6 +9,7 @@ type SaveOpts = {
   dstImagesDir: string;
   staticRoot: string;
   imageInfo: boolean;
+  imageURL: boolean;
 };
 
 type Opts = {
