@@ -416,6 +416,20 @@ describe('client.saveImage', () => {
     expect(mockAxios.request).toHaveBeenCalledTimes(0);
     await expect(res).resolves.toEqual('');
   });
+  it('should return blank wuth image-url', async () => {
+    const res = client(
+      'https://api.appsheet.com/api/v2/',
+      'appId',
+      'appName',
+      'secret'
+    ).saveImage(
+      'tbl',
+      'https://www.appsheet.com/template/gettablefileurl?appName=appName&tableName=tbl&fileName=',
+      '/path/to/static',
+      false
+    );
+    await expect(res).resolves.toEqual('');
+  });
   it('should throw error by 404', async () => {
     const res = client(
       'https://api.appsheet.com/api/v2/',
@@ -427,22 +441,6 @@ describe('client.saveImage', () => {
     mockAxios.mockError({ response: { status: 404, statusText: '' } });
     await expect(res).rejects.toThrow(
       'client.saveImage error: table = tbl, status = 404:'
-    );
-  });
-  it('should throw error by invalid URL params', async () => {
-    const res = client(
-      'https://api.appsheet.com/api/v2/',
-      'appId',
-      'appName',
-      'secret'
-    ).saveImage(
-      'tbl',
-      'https://www.appsheet.com/template/gettablefileurl?appName=appName&tableName=tbl',
-      '/path/to/static',
-      false
-    );
-    await expect(res).rejects.toThrow(
-      'saveImage error: Iamge filename has not resolved: https://www.appsheet.com/template/gettablefileurl?appName=appName&tableName=tbl'
     );
   });
 });

@@ -194,7 +194,6 @@ export function client(
       dstDir: string,
       useImageURL: boolean
     ): Promise<string> {
-      if (src === '') return '';
       let fileName = '';
       if (!useImageURL && src.startsWith(getTableFileURL)) {
         const q = new URLSearchParams(new URL(src).searchParams);
@@ -203,9 +202,7 @@ export function client(
         fileName = path.basename(src);
       }
       if (fileName === '') {
-        throw new Error(
-          `saveImage error: Iamge filename has not resolved: ${src}`
-        );
+        return '';
       }
       const savePath = path.join(dstDir, fileName);
       return new Promise((resolve, reject) => {
