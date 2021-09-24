@@ -365,10 +365,36 @@ describe('client.saveImage', () => {
       'appId',
       'appName',
       'secret'
-    ).saveImage('tbl', 'アプリ_Image/image.jpg', '/path/to/static');
+    ).saveImage('tbl', 'アプリ_Image/image.jpg', '/path/to/static', true);
     expect(mockAxios.request).toHaveBeenLastCalledWith({
       method: 'get',
       url: imageURL('appName', 'tbl', 'アプリ_Image/image.jpg'),
+      responseType: 'stream'
+    });
+    mockAxios.mockResponse({
+      data: 'image data'
+    });
+    await expect(res).resolves.toEqual('/path/to/static/image.jpg');
+    const { mockCreateWriteStream } = require('fs')._getMocks();
+    expect(mockCreateWriteStream).toHaveBeenLastCalledWith(
+      '/path/to/static/image.jpg'
+    );
+  });
+  it('should get image by bare url', async () => {
+    const res = client(
+      'https://api.appsheet.com/api/v2/',
+      'appId',
+      '',
+      'secret'
+    ).saveImage(
+      'tbl',
+      'https://www.appsheet.com/template/gettablefileurl?appName=appName&tableName=tbl&fileName=アプリ_Image%2Fimage.jpg',
+      '/path/to/static',
+      false
+    );
+    expect(mockAxios.request).toHaveBeenLastCalledWith({
+      method: 'get',
+      url: 'https://www.appsheet.com/template/gettablefileurl?appName=appName&tableName=tbl&fileName=アプリ_Image%2Fimage.jpg',
       responseType: 'stream'
     });
     mockAxios.mockResponse({
@@ -386,21 +412,37 @@ describe('client.saveImage', () => {
       'appId',
       'appName',
       'secret'
-    ).saveImage('tbl', '', '/path/to/static');
+    ).saveImage('tbl', '', '/path/to/static', true);
     expect(mockAxios.request).toHaveBeenCalledTimes(0);
     await expect(res).resolves.toEqual('');
   });
-  it('should throw error', async () => {
+  it('should throw error by 404', async () => {
     const res = client(
       'https://api.appsheet.com/api/v2/',
       'appId',
       'appName',
       'secret'
-    ).saveImage('tbl', 'アプリ_Image/image.jpg', '/path/to/static');
+    ).saveImage('tbl', 'アプリ_Image/image.jpg', '/path/to/static', true);
     expect(mockAxios.request).toHaveBeenCalledTimes(1);
     mockAxios.mockError({ response: { status: 404, statusText: '' } });
     await expect(res).rejects.toThrow(
       'client.saveImage error: table = tbl, status = 404:'
+    );
+  });
+  it('should throw error by invalid URL params', async () => {
+    const res = client(
+      'https://api.appsheet.com/api/v2/',
+      'appId',
+      'appName',
+      'secret'
+    ).saveImage(
+      'tbl',
+      'https://www.appsheet.com/template/gettablefileurl?appName=appName&tableName=tbl',
+      '/path/to/static',
+      false
+    );
+    await expect(res).rejects.toThrow(
+      'saveImage error: Iamge filename has not resolved: https://www.appsheet.com/template/gettablefileurl?appName=appName&tableName=tbl'
     );
   });
 });

@@ -52,7 +52,8 @@ describe('cli()', () => {
         dstContentsDir: '/contents/tbl',
         dstImagesDir: '/static/tbl',
         staticRoot: '/static',
-        imageInfo: true
+        imageInfo: true,
+        imageURL: false
       }
     });
     expect(await res).toEqual(0);
@@ -76,7 +77,8 @@ describe('cli()', () => {
         dstContentsDir: '/contents/tbl',
         dstImagesDir: '/static/tbl',
         staticRoot: '/static',
-        imageInfo: true
+        imageInfo: true,
+        imageURL: false
       }
     ]);
     expect(outData).toEqual('');
@@ -104,7 +106,8 @@ describe('cli()', () => {
         dstContentsDir: '/error',
         dstImagesDir: '/static/tbl',
         staticRoot: '/static',
-        imageInfo: true
+        imageInfo: true,
+        imageURL: false
       }
     });
     expect(await res).toEqual(1);
