@@ -29,21 +29,23 @@ refer: [Displaying Images and Documents | AppSheet Help Center](https://help.app
 
 ### Column map
 
-- `mapcol.json(sample)`
+- `mapconfig.json(sample)`
 
 ```json
-[
-    {
-        "srcName": "タイトル",
-        "dstName": "title",
-        "colType": "string"
-    },
-    {
-        "srcName": "メイン画像-url",
-        "dstName": "mainImage",
-        "colType": "image"
-    }
-]
+{
+    "cols":[
+        {
+            "srcName": "タイトル",
+            "dstName": "title",
+            "colType": "string"
+        },
+        {
+            "srcName": "画像",
+            "dstName": "image",
+            "colType": "image"
+        }
+    ]
+}
 ```
 
 ### Env variables

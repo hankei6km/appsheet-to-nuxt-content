@@ -64,10 +64,10 @@ import cli from './cli';
         required: false,
         description: 'app id to iamge adapter endpoint'
       },
-      'map-cols': {
+      'map-config': {
         type: 'string',
         required: true,
-        description: 'json file name that contain mapping columns'
+        description: 'json file name that contain mapping columns etc.'
       },
       'access-key': {
         type: 'string',
@@ -84,7 +84,7 @@ import cli from './cli';
       apiBaseURL: argv['api-base-url'],
       appId: argv['app-id'],
       appName: argv['app-name'] || '',
-      mapCols: argv['map-cols'],
+      mapConfig: argv['map-config'],
       accessKey: argv['access-key'],
       saveOpts: {
         tableName: argv.tableName,
