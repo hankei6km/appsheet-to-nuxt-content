@@ -4,13 +4,15 @@
 
 ## AppSheet 側での設定
 
-### アプリの許可
+### API の有効化
 
 - "Manage" / "Integrations" / "IN: from cloud services to your app"  を開く
 - "Enable" をオンにする
 - "Create Application Access Key" で Access Key を作成する
 
-参考: [API: The Essentials | AppSheet Help Center](https://help.appsheet.com/en/articles/1979966-api-the-essentials)
+参考:
+- [Enabling the API | AppSheet Help Center](https://help.appsheet.com/en/articles/1979976-enabling-the-api)
+- [API: The Essentials | AppSheet Help Center](https://help.appsheet.com/en/articles/1979966-api-the-essentials)
 
 ### 画像表示の設定
 (画像を扱うときのみ必要)
@@ -69,7 +71,7 @@ SHEET2CONTENT_APP_NAME=<app name>-xxxxxxx
 
 ```bash
 npx --package=appsheet-to-nuxt-content -c \
-  'sheet2content save <table name> <contents dir> <iamges dir>'
+  'sheet2content save <table name> <contents dir> <image dir>'
 ```
 
 ## API
