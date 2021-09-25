@@ -1,6 +1,6 @@
 import path from 'path';
 import { resolve } from 'path/posix';
-import { BaseCols, MapCols } from '../types/appsheet';
+import { BaseCols, MapCols, MapConfig } from '../types/appsheet';
 import { saveContentFile, saveRemoteContents } from './content';
 
 // import { getAllPagesIds, getPagesData } from './pages';
@@ -105,7 +105,6 @@ describe('saveContentFile()', () => {
         title: 'Title',
         content: 'markdown'
       },
-      [],
       '/path',
       0
     );
@@ -138,7 +137,6 @@ markdown
         timestamp: new Date(n),
         image: 'アプリ_Images/test.png'
       },
-      [],
       '/path/error',
       0
     );
@@ -169,14 +167,16 @@ describe('saveRemoteContents()', () => {
       }
     ]);
     const client = require('./appsheet')._getMocks().mockClient();
-    const mapCols: MapCols = [
-      { srcName: 'タイトル', dstName: 'title', colType: 'string' },
-      { srcName: '画像', dstName: 'image', colType: 'image' }
-    ];
+    const mapConfig: MapConfig = {
+      cols: [
+        { srcName: 'タイトル', dstName: 'title', colType: 'string' },
+        { srcName: '画像', dstName: 'image', colType: 'image' }
+      ]
+    };
     const res = saveRemoteContents({
       client,
       tableName: 'tbl',
-      mapCols,
+      mapConfig,
       dstContentsDir: '/path/content',
       dstImagesDir: '/path/static/images',
       staticRoot: '/path/static',
@@ -186,7 +186,7 @@ describe('saveRemoteContents()', () => {
     await expect(res).resolves.toEqual(null);
     const { mockClientFind, mockClientSaveImage } =
       require('./appsheet')._getMocks();
-    expect(mockClientFind.mock.calls[0]).toEqual(['tbl', mapCols]);
+    expect(mockClientFind.mock.calls[0]).toEqual(['tbl', mapConfig]);
     expect(mockClientSaveImage.mock.calls[0]).toEqual([
       'tbl',
       'アプリ_Images/test1.png',
@@ -221,10 +221,12 @@ describe('saveRemoteContents()', () => {
   });
   it('should get remote content and save as local files without image info', async () => {
     const client = require('./appsheet')._getMocks().mockClient();
-    const mapCols: MapCols = [
-      { srcName: 'タイトル', dstName: 'title', colType: 'string' },
-      { srcName: '画像', dstName: 'image', colType: 'image' }
-    ];
+    const mapConfig: MapConfig = {
+      cols: [
+        { srcName: 'タイトル', dstName: 'title', colType: 'string' },
+        { srcName: '画像', dstName: 'image', colType: 'image' }
+      ]
+    };
     require('./appsheet')._reset([
       {
         _RowNumber: 1,
@@ -239,7 +241,7 @@ describe('saveRemoteContents()', () => {
     const res = saveRemoteContents({
       client,
       tableName: 'tbl',
-      mapCols,
+      mapConfig,
       dstContentsDir: '/path/content',
       dstImagesDir: '/path/static/images',
       staticRoot: '/path/static',
@@ -265,7 +267,7 @@ describe('saveRemoteContents()', () => {
     const res = saveRemoteContents({
       client,
       tableName: 'tbl',
-      mapCols: [],
+      mapConfig: { cols: [] },
       dstContentsDir: '/error',
       dstImagesDir: '/path/static/images',
       staticRoot: '/path/static',

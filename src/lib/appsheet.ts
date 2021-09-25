@@ -5,7 +5,7 @@ import {
   APIActionBody,
   BaseCols,
   FindResult,
-  MapCols
+  MapConfig
 } from '../types/appsheet';
 
 const getTableFileURL = 'https://www.appsheet.com/template/gettablefileurl';
@@ -42,7 +42,7 @@ function throwInvalidType(
   );
 }
 
-export function mappingCols(s: any, mapCols: MapCols): BaseCols {
+export function mappingCols(s: any, mapConfig: MapConfig): BaseCols {
   const n = new Date();
   const id = validId(s.id) ? s.id : throwInvalidId(s.id, 'id', 'id', 'id');
   const ret: BaseCols = {
@@ -51,7 +51,7 @@ export function mappingCols(s: any, mapCols: MapCols): BaseCols {
     createdAt: s.createdAt ? new Date(s.createdAt) : n,
     updatedAt: s.updatedAt ? new Date(s.updatedAt) : n
   };
-  mapCols.forEach((m) => {
+  mapConfig.cols.forEach((m) => {
     const srcColType = typeof s[m.srcName];
     switch (m.colType) {
       case 'id':
@@ -143,7 +143,7 @@ export function imageURL(
 export type Client = {
   find: (
     tableName: string,
-    mapCols: MapCols,
+    mapConfig: MapConfig,
     props?: Record<string, string>
   ) => Promise<FindResult>;
   saveImage: (
@@ -163,7 +163,7 @@ export function client(
   return {
     find: async function (
       tableName: string,
-      mapCols: MapCols,
+      mapConfig: MapConfig,
       props?: Record<string, string>
     ): Promise<FindResult> {
       const res = await axios
@@ -185,7 +185,7 @@ export function client(
         );
       }
       return {
-        rows: res.data.map((row: any) => mappingCols(row, mapCols))
+        rows: res.data.map((row: any) => mappingCols(row, mapConfig))
       };
     },
     saveImage: async function (

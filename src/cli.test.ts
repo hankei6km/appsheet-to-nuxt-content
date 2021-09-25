@@ -45,7 +45,7 @@ describe('cli()', () => {
       apiBaseURL: 'http://localhost:3000',
       appId: 'appid',
       appName: 'appname',
-      mapCols: 'test/assets/mapcols.json',
+      mapConfig: 'test/assets/mapconfig.json',
       accessKey: 'secret',
       saveOpts: {
         tableName: 'tbl',
@@ -62,18 +62,20 @@ describe('cli()', () => {
       {
         client: expect.any(Object),
         tableName: 'tbl',
-        mapCols: [
-          {
-            srcName: 'タイトル',
-            dstName: 'title',
-            colType: 'string'
-          },
-          {
-            srcName: '画像',
-            dstName: 'image',
-            colType: 'image'
-          }
-        ],
+        mapConfig: {
+          cols: [
+            {
+              srcName: 'タイトル',
+              dstName: 'title',
+              colType: 'string'
+            },
+            {
+              srcName: '画像',
+              dstName: 'image',
+              colType: 'image'
+            }
+          ]
+        },
         dstContentsDir: '/contents/tbl',
         dstImagesDir: '/static/tbl',
         staticRoot: '/static',
@@ -99,7 +101,7 @@ describe('cli()', () => {
       apiBaseURL: 'http://localhost:3000',
       appId: 'appid',
       appName: 'appname',
-      mapCols: 'test/assets/mapcols.json',
+      mapConfig: 'test/assets/mapconfig.json',
       accessKey: 'secret',
       saveOpts: {
         tableName: 'tbl',

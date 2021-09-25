@@ -94,43 +94,45 @@ describe('mappingCols', () => {
           色: '赤',
           背景色: '青'
         },
-        [
-          {
-            srcName: 'タイトル',
-            dstName: 'title',
-            colType: 'string'
-          },
-          {
-            srcName: '回数',
-            dstName: 'count',
-            colType: 'number'
-          },
-          {
-            srcName: 'タイムスタンプ',
-            dstName: 'timestamp',
-            colType: 'datetime'
-          },
-          {
-            srcName: '画像',
-            dstName: 'image',
-            colType: 'image'
-          },
-          {
-            srcName: '色',
-            dstName: 'color',
-            colType: 'enum',
-            replace: []
-          },
-          {
-            srcName: '背景色',
-            dstName: 'bgColor',
-            colType: 'enum',
-            replace: [
-              { pattern: '赤', replacement: 'red' },
-              { pattern: '青', replacement: 'blue' }
-            ]
-          }
-        ]
+        {
+          cols: [
+            {
+              srcName: 'タイトル',
+              dstName: 'title',
+              colType: 'string'
+            },
+            {
+              srcName: '回数',
+              dstName: 'count',
+              colType: 'number'
+            },
+            {
+              srcName: 'タイムスタンプ',
+              dstName: 'timestamp',
+              colType: 'datetime'
+            },
+            {
+              srcName: '画像',
+              dstName: 'image',
+              colType: 'image'
+            },
+            {
+              srcName: '色',
+              dstName: 'color',
+              colType: 'enum',
+              replace: []
+            },
+            {
+              srcName: '背景色',
+              dstName: 'bgColor',
+              colType: 'enum',
+              replace: [
+                { pattern: '赤', replacement: 'red' },
+                { pattern: '青', replacement: 'blue' }
+              ]
+            }
+          ]
+        }
       )
     ).toEqual({
       _RowNumber: 1,
@@ -156,13 +158,15 @@ describe('mappingCols', () => {
           updatedAt: n,
           名前: 'file.md'
         },
-        [
-          {
-            srcName: '名前',
-            dstName: 'filename',
-            colType: 'string'
-          }
-        ]
+        {
+          cols: [
+            {
+              srcName: '名前',
+              dstName: 'filename',
+              colType: 'string'
+            }
+          ]
+        }
       )
     ).toThrow(
       `mappingCols: invalid id: value = id.string, params = id, id, id`
@@ -175,13 +179,15 @@ describe('mappingCols', () => {
           updatedAt: n,
           名前: 'file.md'
         },
-        [
-          {
-            srcName: '名前',
-            dstName: 'filename',
-            colType: 'string'
-          }
-        ]
+        {
+          cols: [
+            {
+              srcName: '名前',
+              dstName: 'filename',
+              colType: 'string'
+            }
+          ]
+        }
       )
     ).toThrow(
       `mappingCols: invalid id: value = undefined, params = id, id, id`
@@ -195,13 +201,15 @@ describe('mappingCols', () => {
           updatedAt: n,
           名前: 'file.md'
         },
-        [
-          {
-            srcName: '名前',
-            dstName: 'filename',
-            colType: 'id'
-          }
-        ]
+        {
+          cols: [
+            {
+              srcName: '名前',
+              dstName: 'filename',
+              colType: 'id'
+            }
+          ]
+        }
       )
     ).toThrow(
       `mappingCols: invalid id: value = file.md, params = 名前, filename, id`
@@ -218,13 +226,15 @@ describe('mappingCols', () => {
           updatedAt: n,
           回数: '21'
         },
-        [
-          {
-            srcName: '回数',
-            dstName: 'count',
-            colType: 'number'
-          }
-        ]
+        {
+          cols: [
+            {
+              srcName: '回数',
+              dstName: 'count',
+              colType: 'number'
+            }
+          ]
+        }
       )
     ).toThrow(
       `mappingCols: invalid type: actually type = string, params = 回数, count, number`
@@ -271,9 +281,9 @@ describe('client.find', () => {
       'appId',
       'appName',
       'secret'
-    ).find('tbl', [
-      { srcName: 'タイトル', dstName: 'title', colType: 'string' }
-    ]);
+    ).find('tbl', {
+      cols: [{ srcName: 'タイトル', dstName: 'title', colType: 'string' }]
+    });
     expect(mockAxios.post).toHaveBeenLastCalledWith(
       `https://api.appsheet.com/api/v2/${apiActionPath(
         'appId',
@@ -329,9 +339,9 @@ describe('client.find', () => {
       'appId',
       'appName',
       'secret'
-    ).find('tbl', [
-      { srcName: 'タイトル', dstName: 'title', colType: 'string' }
-    ]);
+    ).find('tbl', {
+      cols: [{ srcName: 'タイトル', dstName: 'title', colType: 'string' }]
+    });
     expect(mockAxios.post).toHaveBeenCalledTimes(1);
     mockAxios.mockResponse({
       data: ''
@@ -347,9 +357,9 @@ describe('client.find', () => {
       'appId',
       'appName',
       'secret'
-    ).find('tbl', [
-      { srcName: 'タイトル', dstName: 'title', colType: 'string' }
-    ]);
+    ).find('tbl', {
+      cols: [{ srcName: 'タイトル', dstName: 'title', colType: 'string' }]
+    });
     expect(mockAxios.post).toHaveBeenCalledTimes(1);
     mockAxios.mockError({ response: { status: 429, statusText: '429 error' } });
     await expect(res).rejects.toThrow(

@@ -53,6 +53,10 @@ export type MapCols = (
   | MapColsEnum
 )[];
 
+export type MapConfig = {
+  cols: MapCols;
+};
+
 export type FindResult = {
   rows: (BaseCols & Record<string, any>)[];
 };

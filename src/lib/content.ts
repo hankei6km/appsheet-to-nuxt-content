@@ -2,13 +2,12 @@ import path from 'path';
 import fs from 'fs/promises';
 import matter from 'gray-matter';
 import { Client } from './appsheet';
-import { BaseCols, MapCols } from '../types/appsheet';
+import { BaseCols, MapCols, MapConfig } from '../types/appsheet';
 import sizeOf from 'image-size';
 import { ISize } from 'image-size/dist/types/interface';
 
 export async function saveContentFile(
   cols: BaseCols,
-  mapCols: MapCols,
   dstDir: string,
   position: number
 ): Promise<Error | null> {
@@ -78,7 +77,7 @@ export async function saveImageFile(
 export type SaveRemoteContentsOptions = {
   client: Client;
   tableName: string;
-  mapCols: MapCols;
+  mapConfig: MapConfig;
   dstContentsDir: string;
   dstImagesDir: string;
   staticRoot: string;
@@ -89,7 +88,7 @@ export type SaveRemoteContentsOptions = {
 export async function saveRemoteContents({
   client,
   tableName,
-  mapCols,
+  mapConfig,
   dstContentsDir,
   dstImagesDir,
   staticRoot,
@@ -99,7 +98,7 @@ export async function saveRemoteContents({
   const staticRootLen = staticRoot.length;
   let ret: Error | null = null;
   try {
-    const { rows } = await client.find(tableName, mapCols);
+    const { rows } = await client.find(tableName, mapConfig);
     const len = rows.length;
     for (let idx = 0; idx < len; idx++) {
       const colsArray: [string, any][] = Object.entries(rows[idx]);
@@ -107,7 +106,7 @@ export async function saveRemoteContents({
       for (let colsIdx = 0; colsIdx < colsLen; colsIdx++) {
         const c = colsArray[colsIdx];
         if (
-          mapCols.findIndex(
+          mapConfig.cols.findIndex(
             ({ dstName, colType }) => dstName === c[0] && colType === 'image'
           ) >= 0
         ) {
@@ -131,7 +130,7 @@ export async function saveRemoteContents({
       }
       const cols: BaseCols = { ...rows[idx] };
       colsArray.forEach(([k, v]) => (cols[k] = v));
-      ret = await saveContentFile(cols, mapCols, dstContentsDir, idx);
+      ret = await saveContentFile(cols, dstContentsDir, idx);
       if (ret) {
         break;
       }

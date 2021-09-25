@@ -19,7 +19,7 @@ type Opts = {
   apiBaseURL: string;
   appId: string;
   appName: string;
-  mapCols: string;
+  mapConfig: string;
   accessKey: string;
   saveOpts: SaveOpts;
 };
@@ -30,7 +30,7 @@ const cli = async ({
   apiBaseURL,
   appId,
   appName,
-  mapCols,
+  mapConfig,
   accessKey,
   saveOpts
 }: Opts): Promise<number> => {
@@ -40,7 +40,7 @@ const cli = async ({
       case 'save':
         cliErr = await saveRemoteContents({
           client: client(apiBaseURL, appId, appName, accessKey),
-          mapCols: JSON.parse((await fs.readFile(mapCols)).toString()),
+          mapConfig: JSON.parse((await fs.readFile(mapConfig)).toString()),
           ...saveOpts
         });
         break;
