@@ -29,21 +29,23 @@
 
 ### カラムのマップ情報
 
-- `mapcol.json(サンプル)`
+- `mapconfig.json(サンプル)`
 
 ```json
-[
-    {
-        "srcName": "タイトル",
-        "dstName": "title",
-        "colType": "string"
-    },
-    {
-        "srcName": "メイン画像-url",
-        "dstName": "mainImage",
-        "colType": "image"
-    }
-]
+{
+    "cols":[
+        {
+            "srcName": "タイトル",
+            "dstName": "title",
+            "colType": "string"
+        },
+        {
+            "srcName": "画像",
+            "dstName": "image",
+            "colType": "image"
+        }
+    ]
+}
 ```
 
 ### 環境変数
