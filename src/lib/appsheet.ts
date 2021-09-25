@@ -52,51 +52,53 @@ export function mappingCols(s: any, mapConfig: MapConfig): BaseCols {
     updatedAt: s.updatedAt ? new Date(s.updatedAt) : n
   };
   mapConfig.cols.forEach((m) => {
-    const srcColType = typeof s[m.srcName];
-    switch (m.colType) {
-      case 'id':
-        if (srcColType === 'number' || srcColType === 'string') {
-          if (validId(s[m.srcName])) {
+    if (s.hasOwnProperty(m.srcName)) {
+      const srcColType = typeof s[m.srcName];
+      switch (m.colType) {
+        case 'id':
+          if (srcColType === 'number' || srcColType === 'string') {
+            if (validId(s[m.srcName])) {
+              ret[m.dstName] = `${s[m.srcName]}`;
+            } else {
+              throwInvalidId(s[m.srcName], m.srcName, m.dstName, m.colType);
+            }
+          } else {
+            throwInvalidType(srcColType, m.srcName, m.dstName, m.colType);
+          }
+          break;
+        case 'number':
+          if (srcColType === 'number') {
+            ret[m.dstName] = s[m.srcName];
+          } else {
+            throwInvalidType(srcColType, m.srcName, m.dstName, m.colType);
+          }
+          break;
+        case 'string':
+        case 'image': // この時点では文字列として扱う(保存時にファイルをダウンロードする).
+          if (srcColType === 'string' || srcColType === 'number') {
             ret[m.dstName] = `${s[m.srcName]}`;
           } else {
-            throwInvalidId(s[m.srcName], m.srcName, m.dstName, m.colType);
+            ret[m.dstName] = `${s[m.srcName] || ''}`;
           }
-        } else {
-          throwInvalidType(srcColType, m.srcName, m.dstName, m.colType);
-        }
-        break;
-      case 'number':
-        if (srcColType === 'number') {
-          ret[m.dstName] = s[m.srcName];
-        } else {
-          throwInvalidType(srcColType, m.srcName, m.dstName, m.colType);
-        }
-        break;
-      case 'string':
-      case 'image': // この時点では文字列として扱う(保存時にファイルをダウンロードする).
-        if (srcColType === 'string' || srcColType === 'number') {
-          ret[m.dstName] = `${s[m.srcName]}`;
-        } else {
-          ret[m.dstName] = `${s[m.srcName] || ''}`;
-        }
-        break;
-      case 'datetime':
-        ret[m.dstName] = new Date(`${s[m.srcName]}`);
-        break;
-      case 'enum':
-        const str = `${s[m.srcName]}`;
-        const matchIdx = m.replace.findIndex(({ pattern }) =>
-          str.match(pattern)
-        );
-        if (matchIdx >= 0) {
-          ret[m.dstName] = str.replace(
-            m.replace[matchIdx].pattern,
-            m.replace[matchIdx].replacement
+          break;
+        case 'datetime':
+          ret[m.dstName] = new Date(`${s[m.srcName]}`);
+          break;
+        case 'enum':
+          const str = `${s[m.srcName]}`;
+          const matchIdx = m.replace.findIndex(({ pattern }) =>
+            str.match(pattern)
           );
-        } else {
-          ret[m.dstName] = str;
-        }
-        break;
+          if (matchIdx >= 0) {
+            ret[m.dstName] = str.replace(
+              m.replace[matchIdx].pattern,
+              m.replace[matchIdx].replacement
+            );
+          } else {
+            ret[m.dstName] = str;
+          }
+          break;
+      }
     }
   });
   return ret;
