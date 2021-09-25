@@ -4,13 +4,15 @@ Save contents from [AppSheet](https://www.appsheet.com/) for use within  [nuxt-c
 
 ## AppSheet settings
 
-### Application
+### Enable API
 
 - Open "Manage" / "Integrations" / "IN: from cloud services to your app"
 - Turn on "Enable"
 - Generate access key by "Create Application Access Key"
 
-refer: [API: The Essentials | AppSheet Help Center](https://help.appsheet.com/en/articles/1979966-api-the-essentials)
+refer:
+- [Enabling the API | AppSheet Help Center](https://help.appsheet.com/en/articles/1979976-enabling-the-api)
+- [API: The Essentials | AppSheet Help Center](https://help.appsheet.com/en/articles/1979966-api-the-essentials)
 
 ### Image
 (It require when using image)
