@@ -141,6 +141,10 @@ generate image url from rel path to fetch image filee.
 
 `Promise<Error | null>`
 
+## Known Issues
+
+- Partial downaload is not supported
+
 
 ## License
 

@@ -1,6 +1,6 @@
 # appsheet-to-nuxt-content
 
-[AppSheet](https://www.appsheet.com/) のコンテンツを [nuxt-content](https://content.nuxtjs.org/) で利用するために保存する。
+[AppSheet](https://www.appsheet.com/) のコンテンツを [nuxt-content](https://content.nuxtjs.org/) で利用するためにローカルへ保存する。
 
 ## AppSheet 側での設定
 
@@ -131,16 +131,19 @@ AppSheet 用のクライアント。
 
 ##### `saveRemoteOptions.imageInfo`
  
-画像の情報(size, meta) を取り出す指定。
+画像の情報(size, meta) を取りだすす指定。
 
 ##### `saveRemoteOptions.imageURL`
  
-画像取得する URL を相対パスから生成する指定。
+画像を取得する URL を相対パスから生成する指定。
 
 #### returns
 
 `Promise<Error | null>`
 
+## Known Issues
+
+- 部分的なダウンロードはサポートされていません
 
 ## License
 
