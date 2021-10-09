@@ -240,6 +240,40 @@ describe('mappingCols', () => {
       `mappingCols: invalid type: actually type = string, params = 回数, count, number`
     );
   });
+  test('should skip no exist cols', () => {
+    const n = new Date().toUTCString();
+    expect(
+      mappingCols(
+        {
+          _RowNumber: 1,
+          id: 'idstring',
+          createdAt: n,
+          updatedAt: n,
+          回数: 21
+        },
+        {
+          cols: [
+            {
+              srcName: 'タイトル',
+              dstName: 'title',
+              colType: 'string'
+            },
+            {
+              srcName: '回数',
+              dstName: 'count',
+              colType: 'number'
+            }
+          ]
+        }
+      )
+    ).toEqual({
+      _RowNumber: 1,
+      id: 'idstring',
+      createdAt: new Date(n),
+      updatedAt: new Date(n),
+      count: 21
+    });
+  });
 });
 
 describe('apiActionPath', () => {
