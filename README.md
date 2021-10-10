@@ -70,7 +70,7 @@ SHEET2CONTENT_APP_NAME=<app name>-xxxxxxx
 ## Save contents
 
 ```bash
-npx --package=appsheet-to-nuxt-content -c \
+npx --package=@hankei6km/appsheet-to-nuxt-content -c \
   'sheet2content save <table name> <contents dir> <iamges dir>'
 ```
 
@@ -140,6 +140,10 @@ generate image url from rel path to fetch image filee.
 #### returns
 
 `Promise<Error | null>`
+
+## Known Issues
+
+- Partial downaload is not supported
 
 
 ## License
