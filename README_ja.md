@@ -70,8 +70,8 @@ SHEET2CONTENT_APP_NAME=<app name>-xxxxxxx
 ## コンテンツを保存
 
 ```bash
-npx --package=appsheet-to-nuxt-content -c \
-  'sheet2content save <table name> <contents dir> <image dir>'
+npx --package=@hankei6km/appsheet-to-nuxt-content -c \
+  'sheet2content save <table name> <contents dir> <iamges dir>'
 ```
 
 ## API
